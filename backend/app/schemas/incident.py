@@ -1,11 +1,11 @@
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class IncidentCreate(BaseModel):
-    incident_number: str = Field(..., example="INC-2026-001")
-    title: str = Field(..., example="Ransomware Outbreak on Payment Gateway")
+    incident_number: str = Field(..., json_schema_extra={"example": "INC-2026-001"})
+    title: str = Field(..., json_schema_extra={"example": "Ransomware Outbreak on Payment Gateway"})
     type: str = Field(default="Ransomware Outbreak")
     severity: str = Field(default="Critical")
     affected_assets: List[str] = Field(default_factory=list)
@@ -37,12 +37,11 @@ class IncidentResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class VendorCreate(BaseModel):
-    name: str = Field(..., example="CloudShield Managed SOC")
+    name: str = Field(..., json_schema_extra={"example": "CloudShield Managed SOC"})
     vendor_type: str = Field(default="Cloud / SaaS Provider")
     criticality: str = Field(default="High")
     inherent_risk: str = Field(default="High")
@@ -68,5 +67,4 @@ class VendorResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

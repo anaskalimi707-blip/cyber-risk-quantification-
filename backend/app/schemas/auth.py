@@ -1,6 +1,6 @@
 from typing import Optional, List
 from datetime import datetime
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 
 class TokenResponse(BaseModel):
@@ -30,8 +30,7 @@ class UserResponse(BaseModel):
     created_at: datetime
     custom_permissions: List[str] = []
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PermissionCheckResponse(BaseModel):

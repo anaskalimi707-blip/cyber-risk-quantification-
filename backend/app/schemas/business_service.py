@@ -1,10 +1,10 @@
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class BusinessServiceCreate(BaseModel):
-    name: str = Field(..., example="UPI & NetBanking Payment Gateway")
+    name: str = Field(..., json_schema_extra={"example": "UPI & NetBanking Payment Gateway"})
     description: Optional[str] = "High-throughput real-time payment settlement engine."
     business_unit: str = Field(default="Payments & Settlement")
     criticality: str = Field(default="Critical")
@@ -46,8 +46,7 @@ class BusinessServiceResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class BusinessServiceRiskResponse(BaseModel):

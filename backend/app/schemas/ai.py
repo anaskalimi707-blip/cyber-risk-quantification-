@@ -11,7 +11,7 @@ class EvidenceCitation(BaseModel):
 
 
 class AIChatRequest(BaseModel):
-    query: str = Field(..., example="What is our highest financial risk scenario and what investment reduces it most?")
+    query: str = Field(..., json_schema_extra={"example": "What is our highest financial risk scenario and what investment reduces it most?"})
     conversation_id: Optional[str] = None
     context_filters: Dict[str, Any] = Field(default_factory=dict)
 

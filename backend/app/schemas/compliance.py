@@ -1,6 +1,6 @@
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class FrameworkResponse(BaseModel):
@@ -12,8 +12,7 @@ class FrameworkResponse(BaseModel):
     active: bool
     requirements_count: int = 0
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RequirementResponse(BaseModel):
@@ -27,8 +26,7 @@ class RequirementResponse(BaseModel):
     required_evidence: List[str] = []
     risk_relevance: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ComplianceGapResponse(BaseModel):
