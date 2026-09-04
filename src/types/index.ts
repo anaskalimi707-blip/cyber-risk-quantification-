@@ -18,6 +18,8 @@ export type NavigationPage =
   | 'optimizer'
   | 'what-if'
   | 'compliance'
+  | 'connectors'
+  | 'audit-log'
   | 'incidents'
   | 'vendors'
   | 'reports'

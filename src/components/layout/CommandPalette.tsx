@@ -32,6 +32,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
     { label: 'Open What-If Sandbox Simulator', icon: TrendingUp, page: 'what-if' as NavigationPage, category: 'Simulation' },
     { label: 'Inspect Internet-Exposed Assets (Payment API-04)', icon: Server, page: 'assets' as NavigationPage, category: 'Asset Graph' },
     { label: 'Review SEBI CSCRF / NIST CSF 2.0 Compliance Gaps', icon: Shield, page: 'compliance' as NavigationPage, category: 'Compliance' },
+    { label: 'Manage Telemetry & Ingestion Connectors', icon: Server, page: 'connectors' as NavigationPage, category: 'Integrations' },
+    { label: 'Inspect Tamper-Evident SHA-256 Audit Log', icon: Shield, page: 'audit-log' as NavigationPage, category: 'Governance' },
     { label: 'Generate Q3 2026 Board Executive Briefing', icon: FileText, page: 'reports' as NavigationPage, category: 'Reporting' },
   ];
 

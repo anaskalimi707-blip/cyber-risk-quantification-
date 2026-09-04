@@ -18,3 +18,5 @@ export * from './WebhookDiagnosticModal';
 export * from './TelemetryScannerModal';
 export * from './ServiceDrilldownModal';
 export * from './AttackStepDetailsModal';
+export * from './AddConnectorModal';
+

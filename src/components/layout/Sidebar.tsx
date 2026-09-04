@@ -91,7 +91,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       desc: 'Asset ownership, patch SLAs & control health'
     },
     'Org Admin': {
-      pages: ['overview', 'command-center', 'scenarios', 'assets', 'controls', 'optimizer', 'what-if', 'compliance', 'incidents', 'vendors', 'reports', 'settings'],
+      pages: ['overview', 'command-center', 'scenarios', 'assets', 'controls', 'optimizer', 'what-if', 'compliance', 'connectors', 'audit-log', 'incidents', 'vendors', 'reports', 'settings'],
       label: 'Enterprise Administrator',
       icon: Layers,
       desc: 'Full platform administration & configuration'
@@ -109,6 +109,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'incidents', label: 'Incidents & Resilience', roles: ['SecurityArchitect', 'Auditor'] },
     { id: 'vendors', label: 'Third-Party Risk', roles: ['CFO', 'Auditor'] },
     { id: 'compliance', label: 'Compliance & Evidence', roles: ['Auditor'] },
+    { id: 'connectors', label: 'Connectors', roles: ['SecurityArchitect', 'Auditor'] },
+    { id: 'audit-log', label: 'Audit Log', roles: ['Auditor', 'CISO'] },
     { id: 'reports', label: 'Reports & Briefings', roles: ['CISO', 'CFO', 'Auditor'] },
     { id: 'settings', label: 'Settings & Risk Appetite', roles: ['CISO', 'CFO', 'Auditor'] },
   ];

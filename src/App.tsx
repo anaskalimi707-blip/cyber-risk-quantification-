@@ -15,6 +15,8 @@ import { ControlsMatrix } from './components/views/ControlsMatrix';
 import { InvestmentOptimizer } from './components/views/InvestmentOptimizer';
 import { WhatIfSimulator } from './components/views/WhatIfSimulator';
 import { ComplianceEvidence } from './components/views/ComplianceEvidence';
+import { ConnectorsView } from './components/views/ConnectorsView';
+import { AuditLogView } from './components/views/AuditLogView';
 import { IncidentsResilience } from './components/views/IncidentsResilience';
 import { ThirdPartyRisk } from './components/views/ThirdPartyRisk';
 import { ReportsView } from './components/views/ReportsView';
@@ -90,6 +92,8 @@ export function App() {
       case 'optimizer': return 'Investment Optimizer';
       case 'what-if': return 'What-If Simulator';
       case 'compliance': return 'Compliance';
+      case 'connectors': return 'Connectors';
+      case 'audit-log': return 'Audit Log';
       case 'incidents': return 'Incidents';
       case 'vendors': return 'Third-Party Risk';
       case 'reports': return 'Reports';
@@ -155,6 +159,10 @@ export function App() {
             onOpenDocument={openDocument}
           />
         );
+      case 'connectors':
+        return <ConnectorsView onNavigate={(page) => setActivePage(page)} onShowToast={showToast} />;
+      case 'audit-log':
+        return <AuditLogView onNavigate={(page) => setActivePage(page)} onShowToast={showToast} />;
       case 'incidents':
         return <IncidentsResilience onNavigate={(page) => setActivePage(page)} onShowToast={showToast} />;
       case 'vendors':
