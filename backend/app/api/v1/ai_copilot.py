@@ -38,9 +38,24 @@ async def ai_chat(
     return ResponseEnvelope(data=res)
 
 
+@router.get("/system-prompt", response_model=ResponseEnvelope[dict])
+async def get_system_prompt(
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Returns the authoritative CyberOptix AI Copilot system prompt and registered tool schemas.
+    """
+    return ResponseEnvelope(data={
+        "system_prompt": AICopilotService.get_system_prompt(),
+        "tools": AICopilotService.get_tools_schema(),
+        "model_version": "cyberoptix-copilot-v1.0"
+    })
+
+
 @router.post("/feedback", response_model=ResponseEnvelope[dict])
 async def ai_feedback(
     req: AIFeedbackRequest,
     current_user: User = Depends(get_current_user)
 ):
     return ResponseEnvelope(data={"message": "Feedback submitted successfully for continuous model alignment."})
+
