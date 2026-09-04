@@ -1,20 +1,37 @@
 import React from 'react';
 import { X, Printer, Download, CheckCircle2, Shield, Lock, FileText, QrCode } from 'lucide-react';
+import { downloadDocumentPdf } from '../../utils/pdfGenerator';
 
 interface DocumentViewerModalProps {
   isOpen: boolean;
   onClose: () => void;
   documentTitle?: string;
   documentType?: string;
+  onShowToast?: (type: 'success' | 'warning' | 'info', title: string, description: string) => void;
 }
 
 export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
   isOpen,
   onClose,
   documentTitle = "Q3 2026 Board Cyber Risk Quantification & Investment Dossier",
-  documentType = "Executive Board Briefing"
+  documentType = "Executive Board Briefing",
+  onShowToast
 }) => {
   if (!isOpen) return null;
+
+  const handleDownloadPdf = () => {
+    downloadDocumentPdf({
+      documentTitle,
+      documentType,
+      organizationName: "Acme Financial Services Limited",
+      classification: "CONFIDENTIAL • BOARD ONLY",
+      date: "04 September 2026",
+      ledgerRef: "#COX-2026-Q3-0994"
+    });
+    if (onShowToast) {
+      onShowToast('success', 'PDF Generated', `Downloaded ${documentTitle} with SHA-256 seal.`);
+    }
+  };
 
   return (
     <div 
@@ -36,18 +53,17 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
 
           <div className="flex items-center gap-2">
             <button 
-              className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded border border-line bg-card hover:bg-paper text-ink transition-colors cursor-pointer shadow-xs"
-              onClick={() => window.print()}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded border border-line bg-card hover:bg-paper text-ink transition-colors cursor-pointer shadow-xs"
+              onClick={handleDownloadPdf}
+              title="Print or Save as PDF"
             >
               <Printer size={13} />
               <span>Print Document</span>
             </button>
             <button 
-              className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded border border-ink bg-ink hover:bg-slate-900 text-white transition-colors cursor-pointer shadow-xs"
-              onClick={() => {
-                alert(`Downloaded ${documentTitle} (PDF with Cryptographic Seal).`);
-                onClose();
-              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded border border-ink bg-ink hover:bg-slate-900 text-white transition-colors cursor-pointer shadow-xs"
+              onClick={handleDownloadPdf}
+              title="Download PDF Dossier"
             >
               <Download size={13} />
               <span>Download PDF</span>

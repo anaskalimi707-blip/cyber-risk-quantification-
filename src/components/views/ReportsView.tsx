@@ -3,6 +3,7 @@ import { NavigationPage } from '../../types';
 import { Plus, Calendar, Download, FileText, CheckCircle2 } from 'lucide-react';
 import { ReportSchedulerModal } from '../modals/ReportSchedulerModal';
 import { CustomReportBuilderModal } from '../modals/CustomReportBuilderModal';
+import { downloadDocumentPdf } from '../../utils/pdfGenerator';
 
 interface ReportsViewProps {
   onNavigate: (page: NavigationPage) => void;
@@ -20,6 +21,18 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ onNavigate, onOpenDocu
 
   const handleGenerateNew = () => {
     setIsBuilderOpen(true);
+  };
+
+  const handleDirectDownload = (title: string, type: string) => {
+    downloadDocumentPdf({
+      documentTitle: title,
+      documentType: type,
+      organizationName: "Acme Financial Services Limited",
+      classification: "CONFIDENTIAL • BOARD ONLY",
+      date: "04 September 2026",
+      ledgerRef: "#COX-2026-Q3-0994"
+    });
+    onShowToast?.('success', 'PDF Downloaded', `Generated and downloaded "${title}" with SHA-256 seal.`);
   };
 
   return (
@@ -62,12 +75,22 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ onNavigate, onOpenDocu
             <td style={{ color: 'var(--sub)' }}>Today, 07:40</td>
             <td><span className="badge good">PDF (Signed)</span></td>
             <td style={{ textAlign: 'right' }}>
-              <button 
-                className="link-btn font-medium" 
-                onClick={() => onOpenDocument("Executive Cyber-Risk Report", "Executive Board Briefing")}
-              >
-                Preview &amp; Download →
-              </button>
+              <div className="inline-flex items-center gap-3">
+                <button 
+                  className="link-btn font-medium inline-flex items-center gap-1"
+                  onClick={() => handleDirectDownload("Executive Cyber-Risk Report", "Executive Board Briefing")}
+                  title="Direct Download PDF"
+                >
+                  <Download size={12} />
+                  <span>PDF</span>
+                </button>
+                <button 
+                  className="link-btn font-medium" 
+                  onClick={() => onOpenDocument("Executive Cyber-Risk Report", "Executive Board Briefing")}
+                >
+                  Preview →
+                </button>
+              </div>
             </td>
           </tr>
           <tr>
@@ -76,12 +99,22 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ onNavigate, onOpenDocu
             <td style={{ color: 'var(--sub)' }}>Yesterday</td>
             <td><span className="badge good">PDF (Signed)</span></td>
             <td style={{ textAlign: 'right' }}>
-              <button 
-                className="link-btn font-medium" 
-                onClick={() => onOpenDocument("CISO Operational Posture Report", "Operational Report")}
-              >
-                Preview &amp; Download →
-              </button>
+              <div className="inline-flex items-center gap-3">
+                <button 
+                  className="link-btn font-medium inline-flex items-center gap-1"
+                  onClick={() => handleDirectDownload("CISO Operational Posture Report", "Operational Report")}
+                  title="Direct Download PDF"
+                >
+                  <Download size={12} />
+                  <span>PDF</span>
+                </button>
+                <button 
+                  className="link-btn font-medium" 
+                  onClick={() => onOpenDocument("CISO Operational Posture Report", "Operational Report")}
+                >
+                  Preview →
+                </button>
+              </div>
             </td>
           </tr>
           <tr>
@@ -90,12 +123,22 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ onNavigate, onOpenDocu
             <td style={{ color: 'var(--sub)' }}>3 days ago</td>
             <td><span className="badge neutral">PDF, CSV</span></td>
             <td style={{ textAlign: 'right' }}>
-              <button 
-                className="link-btn font-medium" 
-                onClick={() => onOpenDocument("Q3 2026 Investment Recommendation Report", "Investment Plan")}
-              >
-                Preview &amp; Download →
-              </button>
+              <div className="inline-flex items-center gap-3">
+                <button 
+                  className="link-btn font-medium inline-flex items-center gap-1"
+                  onClick={() => handleDirectDownload("Q3 2026 Investment Recommendation Report", "Investment Plan")}
+                  title="Direct Download PDF"
+                >
+                  <Download size={12} />
+                  <span>PDF</span>
+                </button>
+                <button 
+                  className="link-btn font-medium" 
+                  onClick={() => onOpenDocument("Q3 2026 Investment Recommendation Report", "Investment Plan")}
+                >
+                  Preview →
+                </button>
+              </div>
             </td>
           </tr>
           <tr>
@@ -104,12 +147,22 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ onNavigate, onOpenDocu
             <td style={{ color: 'var(--sub)' }}>5 days ago</td>
             <td><span className="badge neutral">ZIP (Hashes)</span></td>
             <td style={{ textAlign: 'right' }}>
-              <button 
-                className="link-btn font-medium" 
-                onClick={() => onOpenDocument("SEBI CSCRF Compliance Evidence Package", "Audit Package")}
-              >
-                Preview &amp; Download →
-              </button>
+              <div className="inline-flex items-center gap-3">
+                <button 
+                  className="link-btn font-medium inline-flex items-center gap-1"
+                  onClick={() => handleDirectDownload("SEBI CSCRF Compliance Evidence Package", "Audit Package")}
+                  title="Direct Download PDF"
+                >
+                  <Download size={12} />
+                  <span>PDF</span>
+                </button>
+                <button 
+                  className="link-btn font-medium" 
+                  onClick={() => onOpenDocument("SEBI CSCRF Compliance Evidence Package", "Audit Package")}
+                >
+                  Preview →
+                </button>
+              </div>
             </td>
           </tr>
           <tr>
@@ -118,12 +171,22 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ onNavigate, onOpenDocu
             <td style={{ color: 'var(--sub)' }}>9 days ago</td>
             <td><span className="badge warn">PDF (Overdue)</span></td>
             <td style={{ textAlign: 'right' }}>
-              <button 
-                className="link-btn font-medium" 
-                onClick={() => onOpenDocument("Vendor Risk Report: CloudPay Processing Ltd.", "Vendor Report")}
-              >
-                Preview &amp; Download →
-              </button>
+              <div className="inline-flex items-center gap-3">
+                <button 
+                  className="link-btn font-medium inline-flex items-center gap-1"
+                  onClick={() => handleDirectDownload("Vendor Risk Report: CloudPay Processing Ltd.", "Vendor Report")}
+                  title="Direct Download PDF"
+                >
+                  <Download size={12} />
+                  <span>PDF</span>
+                </button>
+                <button 
+                  className="link-btn font-medium" 
+                  onClick={() => onOpenDocument("Vendor Risk Report: CloudPay Processing Ltd.", "Vendor Report")}
+                >
+                  Preview →
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>

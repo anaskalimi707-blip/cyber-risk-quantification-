@@ -345,6 +345,7 @@ function EnterpriseWorkspace() {
         onClose={() => setDocumentModalData({ isOpen: false, title: '', type: '' })}
         documentTitle={documentModalData.title}
         documentType={documentModalData.type}
+        onShowToast={showToast}
       />
 
       {/* Evidence Inspector Drawer */}
