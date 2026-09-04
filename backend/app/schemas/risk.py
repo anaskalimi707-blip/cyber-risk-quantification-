@@ -1,10 +1,10 @@
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class RiskScenarioCreate(BaseModel):
-    name: str = Field(..., example="Ransomware affecting Core Payment Gateway")
+    name: str = Field(..., json_schema_extra={"example": "Ransomware affecting Core Payment Gateway"})
     description: Optional[str] = "Adversary exploits external API vulnerability, performs lateral movement, and deploys ransomware."
     threat_id: Optional[str] = None
     attack_techniques: List[str] = Field(default_factory=lambda: ["T1486", "T1078"])
@@ -38,8 +38,7 @@ class RiskCalculationResponse(BaseModel):
     calculated_at: datetime
     triggered_by: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RiskScenarioResponse(BaseModel):
@@ -67,8 +66,7 @@ class RiskScenarioResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RiskTreatmentRequest(BaseModel):

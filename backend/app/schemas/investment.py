@@ -1,10 +1,10 @@
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class InvestmentCreate(BaseModel):
-    name: str = Field(..., example="Phishing-Resistant FIDO2 MFA")
+    name: str = Field(..., json_schema_extra={"example": "Phishing-Resistant FIDO2 MFA"})
     description: Optional[str] = "Enforce hardware security keys for all privileged access."
     category: str = Field(default="Identity & Access")
     initial_cost: float = Field(default=2500000.0, description="Cost in currency (e.g. ₹25 Lakh)")
@@ -40,8 +40,7 @@ class InvestmentResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PortfolioOptimizationRequest(BaseModel):
@@ -74,8 +73,7 @@ class PortfolioResponse(BaseModel):
     rejection_reason: Optional[str] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PortfolioApprovalRequest(BaseModel):

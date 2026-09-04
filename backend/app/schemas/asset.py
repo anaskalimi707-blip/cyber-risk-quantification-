@@ -1,11 +1,11 @@
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class AssetCreate(BaseModel):
-    name: str = Field(..., example="api-gateway-prod-01")
-    asset_type: str = Field(default="API Gateway", example="API Gateway")
+    name: str = Field(..., json_schema_extra={"example": "api-gateway-prod-01"})
+    asset_type: str = Field(default="API Gateway", json_schema_extra={"example": "API Gateway"})
     hostname: Optional[str] = "gw.prod.cyberoptix.internal"
     ip_address: Optional[str] = "10.0.4.15"
     cloud_account: Optional[str] = "aws-prod-12345678"
@@ -53,8 +53,7 @@ class AssetResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AssetRiskContribution(BaseModel):

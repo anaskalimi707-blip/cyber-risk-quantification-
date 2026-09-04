@@ -1,10 +1,10 @@
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class ControlCreate(BaseModel):
-    name: str = Field(..., example="Phishing-Resistant Hardware MFA")
+    name: str = Field(..., json_schema_extra={"example": "Phishing-Resistant Hardware MFA"})
     description: Optional[str] = "FIDO2 WebAuthn authentication for all administrative access."
     category: str = Field(default="Preventive")
     implementation_percentage: float = Field(default=0.85, ge=0.0, le=1.0)
@@ -48,8 +48,7 @@ class ControlResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ControlEffectivenessDetail(BaseModel):

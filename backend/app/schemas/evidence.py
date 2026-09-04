@@ -1,14 +1,14 @@
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class EvidenceCreate(BaseModel):
-    evidence_type: str = Field(default="Configuration Log", example="Configuration Log")
-    source_system: str = Field(default="AWS GuardDuty / Okta", example="AWS GuardDuty / Okta")
+    evidence_type: str = Field(default="Configuration Log", json_schema_extra={"example": "Configuration Log"})
+    source_system: str = Field(default="AWS GuardDuty / Okta", json_schema_extra={"example": "AWS GuardDuty / Okta"})
     source_record_id: Optional[str] = None
     file_uri: Optional[str] = None
-    content_hash: str = Field(..., example="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")
+    content_hash: str = Field(..., json_schema_extra={"example": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"})
     valid_from: Optional[datetime] = None
     valid_until: Optional[datetime] = None
     reliability_score: float = Field(default=0.95, ge=0.0, le=1.0)
@@ -39,8 +39,7 @@ class EvidenceResponse(BaseModel):
     version: str
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EvidenceVerificationResponse(BaseModel):
