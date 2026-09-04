@@ -1,0 +1,11 @@
+control_id,control_name,category,cost_inr,implementation_days,ransomware_prob_reduction,ransomware_impact_reduction,phishing_prob_reduction,data_breach_prob_reduction,ddos_impact_reduction,dependencies
+EDR-01,Next-Gen EDR & XDR,Protect,3000000,45,0.25,0.20,0.10,0.20,0.05,None
+BCK-01,Air-Gapped Immutable Backups,Recover,3500000,60,0.05,0.70,0.00,0.00,0.00,None
+MFA-01,Phishing-Resistant FIDO2 MFA,Protect,2500000,30,0.30,0.10,0.65,0.25,0.00,None
+SEG-01,Zero-Trust Network Microsegmentation,Protect,7000000,120,0.35,0.30,0.05,0.35,0.40,None
+VUL-01,Continuous Vulnerability Management,Identify,2000000,30,0.20,0.05,0.15,0.30,0.00,None
+SAT-01,Security Awareness Training & Simulation,Govern,1200000,15,0.15,0.00,0.45,0.10,0.00,None
+SIEM-01,24/7 Managed SOC & SIEM Integration,Detect,4000000,60,0.20,0.25,0.20,0.20,0.20,None
+IR-01,Incident Response Retainer & Drills,Respond,1000000,15,0.00,0.30,0.00,0.15,0.10,None
+PAM-01,Privileged Access Management (PAM),Protect,3500000,60,0.25,0.15,0.30,0.30,0.00,MFA-01
+CSPM-01,Cloud Security Posture Management,Identify,2500000,45,0.10,0.10,0.05,0.40,0.00,None

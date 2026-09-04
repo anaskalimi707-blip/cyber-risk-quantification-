@@ -1,0 +1,5 @@
+incident_type,roc_auc,precision,recall,f1_score,brier_score,impact_r2,impact_mae_inr
+Ransomware,0.5307,0.0,0.0,0.0,0.005,0.85,1500000.0
+Phishing,0.8041,0.0,0.0,0.0,0.0297,0.9413,6031853.39
+Data_breach,0.6285,0.0,0.0,0.0,0.0363,0.7316,29088184.74
+Ddos,0.7311,0.0,0.0,0.0,0.097,0.9168,4228448.45
