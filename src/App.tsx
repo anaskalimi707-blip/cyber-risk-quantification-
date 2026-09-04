@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { LoginView } from './components/auth/LoginView';
+import { LockScreenModal } from './components/auth/LockScreenModal';
+
 import { Sidebar } from './components/layout/Sidebar';
 import { TopBar } from './components/layout/TopBar';
 import { CommandPalette } from './components/layout/CommandPalette';
@@ -24,11 +28,17 @@ import { SettingsView } from './components/views/SettingsView';
 
 import { NavigationPage, UserRole } from './types';
 
-export function App() {
+function EnterpriseWorkspace() {
+  const { user, role, isAuthenticated, switchRole } = useAuth();
   const [activePage, setActivePage] = useState<NavigationPage>('overview');
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('scen-ransomware-payment');
-  const [currentRole, setCurrentRole] = useState<UserRole>('CISO');
-  const [darkMode, setDarkMode] = useState<boolean>(false);
+  
+  // Persistent Dark Mode
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    const saved = localStorage.getItem('cyberoptix_dark_mode');
+    return saved ? saved === 'true' : false;
+  });
+
   const [sidebarWidth, setSidebarWidth] = useState<number>(240);
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
@@ -61,12 +71,14 @@ export function App() {
     setDocumentModalData({ isOpen: true, title, type });
   };
 
-  // Sync theme
+  // Sync theme to DOM & localStorage
   useEffect(() => {
     if (darkMode) {
       document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('cyberoptix_dark_mode', 'true');
     } else {
       document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('cyberoptix_dark_mode', 'false');
     }
   }, [darkMode]);
 
@@ -192,6 +204,10 @@ export function App() {
     }
   };
 
+  if (!isAuthenticated) {
+    return <LoginView onShowToast={showToast} />;
+  }
+
   const gridStyle = {
     display: 'grid',
     gridTemplateColumns: sidebarCollapsed ? '64px 1fr' : `${sidebarWidth}px 1fr`,
@@ -205,10 +221,10 @@ export function App() {
       <Sidebar 
         activePage={activePage}
         onNavigate={(page) => setActivePage(page)}
-        currentRole={currentRole}
-        onChangeRole={(role) => {
-          setCurrentRole(role);
-          showToast('info', 'Role Switched', `Active workspace persona updated to ${role}.`);
+        currentRole={role}
+        onChangeRole={(newRole) => {
+          switchRole(newRole);
+          showToast('info', 'Role Switched', `Active workspace persona updated to ${newRole}.`);
         }}
         width={sidebarWidth}
         onResize={(newWidth) => setSidebarWidth(newWidth)}
@@ -220,15 +236,16 @@ export function App() {
       {/* Main Content Body */}
       <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <TopBar 
-          currentRole={currentRole}
-          onChangeRole={(role) => {
-            setCurrentRole(role);
-            showToast('info', 'Role Switched', `Active workspace persona updated to ${role}.`);
+          currentRole={role}
+          onChangeRole={(newRole) => {
+            switchRole(newRole);
+            showToast('info', 'Role Switched', `Active workspace persona updated to ${newRole}.`);
           }}
           darkMode={darkMode}
           onToggleTheme={() => {
-            setDarkMode(!darkMode);
-            showToast('info', 'Theme Toggled', darkMode ? 'Switched to editorial light ledger theme.' : 'Switched to dark theme.');
+            const nextMode = !darkMode;
+            setDarkMode(nextMode);
+            showToast('info', 'Theme Toggled', nextMode ? 'Switched to dark theme.' : 'Switched to editorial light ledger theme.');
           }}
           onOpenSearch={() => setIsSearchOpen(true)}
           onOpenAI={() => setIsAIOpen(true)}
@@ -273,9 +290,21 @@ export function App() {
         toasts={toasts}
         onDismiss={dismissToast}
       />
+
+      {/* Lock Screen Re-Authentication Modal */}
+      <LockScreenModal />
     </div>
   );
 }
 
+export function App() {
+  return (
+    <AuthProvider>
+      <EnterpriseWorkspace />
+    </AuthProvider>
+  );
+}
+
 export default App;
+
 

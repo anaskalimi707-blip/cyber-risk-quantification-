@@ -198,3 +198,143 @@ input[type=range]{ width:100%; accent-color:var(--ink); }
 .chip-row{ display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 20px; }
 .chip{ font-size:12.5px; padding:6px 12px; border:1px solid var(--line); border-radius:16px; background:#fff; cursor:pointer; font-family:'Inter'; }
 .chip.active{ background:var(--ink); color:#fff; border-color:var(--ink); }
+
+/* ---------- DARK THEME SUPPORT ---------- */
+html[data-theme='dark'], body.dark {
+  --paper: #0B1622;
+  --card: #101E2D;
+  --text: #E6EDF3;
+  --sub: #93A5B8;
+  --line: #223244;
+  --ink: #E6EDF3;
+}
+
+html[data-theme='dark'] body, body.dark {
+  background-color: var(--paper);
+  color: var(--text);
+}
+
+html[data-theme='dark'] .rail, body.dark .rail {
+  background: #060D16;
+  border-right: 1px solid #1B2C3E;
+}
+
+html[data-theme='dark'] .portfolio-card,
+html[data-theme='dark'] .path-node,
+html[data-theme='dark'] .callout,
+html[data-theme='dark'] .bg-card,
+body.dark .portfolio-card,
+body.dark .path-node,
+body.dark .callout,
+body.dark .bg-card {
+  background-color: #101E2D !important;
+  border-color: #223244 !important;
+  color: #E6EDF3 !important;
+}
+
+html[data-theme='dark'] .bg-paper,
+body.dark .bg-paper {
+  background-color: #0B1622 !important;
+  color: #E6EDF3 !important;
+}
+
+html[data-theme='dark'] table.ledger-table tr:hover td,
+body.dark table.ledger-table tr:hover td {
+  background-color: #142435 !important;
+}
+
+html[data-theme='dark'] input,
+html[data-theme='dark'] select,
+body.dark input,
+body.dark select {
+  background-color: #101E2D !important;
+  color: #E6EDF3 !important;
+  border-color: #223244 !important;
+}
+
+html[data-theme='dark'] .btn,
+body.dark .btn {
+  border-color: #38516B;
+  color: #E6EDF3;
+}
+
+html[data-theme='dark'] .btn:hover,
+body.dark .btn:hover {
+  background: #1B2C3E;
+  color: #FFFFFF;
+}
+
+html[data-theme='dark'] .btn.primary,
+body.dark .btn.primary {
+  background: #1466AA;
+  border-color: #1466AA;
+  color: #FFFFFF;
+}
+
+html[data-theme='dark'] .btn.primary:hover,
+body.dark .btn.primary:hover {
+  background: #0F5289;
+}
+
+html[data-theme='dark'] .bar-track,
+html[data-theme='dark'] .readiness-bar,
+body.dark .bar-track,
+body.dark .readiness-bar {
+  background: #1B2C3E !important;
+}
+
+html[data-theme='dark'] .badge.good,
+body.dark .badge.good {
+  background: rgba(0, 150, 135, 0.15) !important;
+  border-color: rgba(0, 150, 135, 0.3) !important;
+  color: #2DD4BF !important;
+}
+
+html[data-theme='dark'] .badge.warn,
+body.dark .badge.warn {
+  background: rgba(200, 137, 35, 0.15) !important;
+  border-color: rgba(200, 137, 35, 0.3) !important;
+  color: #FBBF24 !important;
+}
+
+html[data-theme='dark'] .badge.crit,
+body.dark .badge.crit {
+  background: rgba(185, 45, 55, 0.15) !important;
+  border-color: rgba(185, 45, 55, 0.3) !important;
+  color: #F87171 !important;
+}
+
+html[data-theme='dark'] .badge.neutral,
+body.dark .badge.neutral {
+  background: rgba(20, 102, 170, 0.15) !important;
+  border-color: rgba(20, 102, 170, 0.3) !important;
+  color: #7FB3DF !important;
+}
+
+html[data-theme='dark'] .topbar,
+body.dark .topbar {
+  background: #101E2D !important;
+  border-bottom: 1px solid #223244 !important;
+}
+
+html[data-theme='dark'] .dropdown,
+body.dark .dropdown {
+  background: #101E2D !important;
+  border-color: #223244 !important;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+html[data-theme='dark'] .chip,
+body.dark .chip {
+  background: #101E2D !important;
+  border-color: #223244 !important;
+  color: #E6EDF3 !important;
+}
+
+html[data-theme='dark'] .chip.active,
+body.dark .chip.active {
+  background: #1466AA !important;
+  border-color: #1466AA !important;
+  color: #FFFFFF !important;
+}
+
