@@ -109,8 +109,9 @@ Every view and API is engineered to answer three fundamental questions:
 
 ### 1. Repository Setup
 ```bash
-git clone https://github.com/namanartist/cyberoptix.git
-cd cyberoptix
+git clone https://github.com/anaskalimi707-blip/cyber-risk-quantification-.git
+cd cyber-risk-quantification-
+
 ```
 
 ---
