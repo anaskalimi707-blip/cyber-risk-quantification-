@@ -199,26 +199,61 @@ input[type=range]{ width:100%; accent-color:var(--ink); }
 .chip{ font-size:12.5px; padding:6px 12px; border:1px solid var(--line); border-radius:16px; background:#fff; cursor:pointer; font-family:'Inter'; }
 .chip.active{ background:var(--ink); color:#fff; border-color:var(--ink); }
 
-/* ---------- DARK THEME SUPPORT ---------- */
+/* ---------- ULTRA-PREMIUM DARK THEME SYSTEM ---------- */
 html[data-theme='dark'], body.dark {
-  --paper: #0B1622;
-  --card: #101E2D;
-  --text: #E6EDF3;
-  --sub: #93A5B8;
-  --line: #223244;
-  --ink: #E6EDF3;
+  --paper: #070E17;
+  --card: #0D1927;
+  --text: #F1F5F9;
+  --sub: #94A3B8;
+  --line: #1E2E42;
+  --ink: #F8FAFC;
+  --ledger: #38BDF8;
+  --teal: #2DD4BF;
+  --amber: #FBBF24;
+  --crimson: #FB7185;
 }
 
+/* Base Body & Background Aura */
 html[data-theme='dark'] body, body.dark {
   background-color: var(--paper);
   color: var(--text);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(14, 38, 66, 0.45) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(15, 23, 42, 0.6) 0px, transparent 50%);
+  background-attachment: fixed;
 }
 
+/* Sidebar Rail */
 html[data-theme='dark'] .rail, body.dark .rail {
-  background: #060D16;
-  border-right: 1px solid #1B2C3E;
+  background: #04080F;
+  border-right: 1px solid #142132;
 }
 
+html[data-theme='dark'] .rail a,
+html[data-theme='dark'] .rail button.nav-link,
+body.dark .rail a,
+body.dark .rail button.nav-link {
+  color: #94A3B8;
+}
+
+html[data-theme='dark'] .rail a.active,
+html[data-theme='dark'] .rail button.nav-link.active,
+body.dark .rail a.active,
+body.dark .rail button.nav-link.active {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38BDF8;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+html[data-theme='dark'] .rail a:hover,
+html[data-theme='dark'] .rail button.nav-link:hover,
+body.dark .rail a:hover,
+body.dark .rail button.nav-link:hover {
+  color: #F8FAFC;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Card Surfaces & Glassmorphism */
 html[data-theme='dark'] .portfolio-card,
 html[data-theme='dark'] .path-node,
 html[data-theme='dark'] .callout,
@@ -227,114 +262,276 @@ body.dark .portfolio-card,
 body.dark .path-node,
 body.dark .callout,
 body.dark .bg-card {
-  background-color: #101E2D !important;
-  border-color: #223244 !important;
-  color: #E6EDF3 !important;
+  background-color: #0D1927 !important;
+  border-color: #1E2E42 !important;
+  color: #F1F5F9 !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
 }
 
 html[data-theme='dark'] .bg-paper,
 body.dark .bg-paper {
-  background-color: #0B1622 !important;
-  color: #E6EDF3 !important;
+  background-color: #070E17 !important;
+  color: #F1F5F9 !important;
+}
+
+/* Masthead & Section Headers */
+html[data-theme='dark'] .masthead h1,
+body.dark .masthead h1 {
+  color: #F8FAFC;
+}
+
+html[data-theme='dark'] h2.section,
+body.dark h2.section {
+  color: #F8FAFC;
+}
+
+/* Hero Figures & Accents */
+html[data-theme='dark'] .hero .figure,
+body.dark .hero .figure {
+  color: #FB7185;
+  text-shadow: 0 0 25px rgba(251, 113, 133, 0.25);
+}
+
+html[data-theme='dark'] .hero .figure.ok,
+body.dark .hero .figure.ok {
+  color: #2DD4BF;
+  text-shadow: 0 0 25px rgba(45, 212, 191, 0.25);
+}
+
+html[data-theme='dark'] .ledger-item .v,
+body.dark .ledger-item .v {
+  color: #F8FAFC;
+}
+
+/* Tags in Dark Mode */
+html[data-theme='dark'] .hero .tag,
+body.dark .hero .tag {
+  color: #FB7185;
+  border-color: rgba(251, 113, 133, 0.3);
+  background: rgba(251, 113, 133, 0.12);
+}
+
+html[data-theme='dark'] .hero .tag.teal,
+body.dark .hero .tag.teal {
+  color: #2DD4BF;
+  border-color: rgba(45, 212, 191, 0.3);
+  background: rgba(45, 212, 191, 0.12);
+}
+
+html[data-theme='dark'] .hero .tag.amber,
+body.dark .hero .tag.amber {
+  color: #FBBF24;
+  border-color: rgba(251, 191, 36, 0.3);
+  background: rgba(251, 191, 36, 0.12);
+}
+
+/* Tables & Hover States */
+html[data-theme='dark'] table.ledger-table th,
+body.dark table.ledger-table th {
+  color: #94A3B8;
+  border-color: #1E2E42;
+  background: #09121C;
+}
+
+html[data-theme='dark'] table.ledger-table td,
+body.dark table.ledger-table td {
+  border-color: #1E2E42;
+  color: #E2E8F0;
 }
 
 html[data-theme='dark'] table.ledger-table tr:hover td,
 body.dark table.ledger-table tr:hover td {
-  background-color: #142435 !important;
+  background-color: #132234 !important;
 }
 
+html[data-theme='dark'] table.ledger-table td.num,
+body.dark table.ledger-table td.num {
+  color: #F8FAFC;
+}
+
+/* Form Controls & Inputs */
 html[data-theme='dark'] input,
 html[data-theme='dark'] select,
 body.dark input,
 body.dark select {
-  background-color: #101E2D !important;
-  color: #E6EDF3 !important;
-  border-color: #223244 !important;
+  background-color: #0A131F !important;
+  color: #F8FAFC !important;
+  border-color: #1E2E42 !important;
 }
 
+html[data-theme='dark'] input:focus,
+html[data-theme='dark'] select:focus,
+body.dark input:focus,
+body.dark select:focus {
+  border-color: #38BDF8 !important;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25) !important;
+}
+
+/* Buttons */
 html[data-theme='dark'] .btn,
 body.dark .btn {
-  border-color: #38516B;
-  color: #E6EDF3;
+  border-color: #2A405A;
+  color: #E2E8F0;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 html[data-theme='dark'] .btn:hover,
 body.dark .btn:hover {
-  background: #1B2C3E;
+  background: #17293D;
   color: #FFFFFF;
+  border-color: #38516B;
 }
 
 html[data-theme='dark'] .btn.primary,
 body.dark .btn.primary {
-  background: #1466AA;
-  border-color: #1466AA;
+  background: #0284C7;
+  border-color: #0284C7;
   color: #FFFFFF;
+  box-shadow: 0 2px 10px rgba(2, 132, 199, 0.3);
 }
 
 html[data-theme='dark'] .btn.primary:hover,
 body.dark .btn.primary:hover {
-  background: #0F5289;
+  background: #0369A1;
+  border-color: #0369A1;
 }
 
+/* Progress & Capacity Bars */
 html[data-theme='dark'] .bar-track,
 html[data-theme='dark'] .readiness-bar,
 body.dark .bar-track,
 body.dark .readiness-bar {
-  background: #1B2C3E !important;
+  background: #142233 !important;
 }
 
+/* Glowing Status Badges */
 html[data-theme='dark'] .badge.good,
 body.dark .badge.good {
-  background: rgba(0, 150, 135, 0.15) !important;
-  border-color: rgba(0, 150, 135, 0.3) !important;
+  background: rgba(45, 212, 191, 0.14) !important;
+  border-color: rgba(45, 212, 191, 0.35) !important;
   color: #2DD4BF !important;
 }
 
 html[data-theme='dark'] .badge.warn,
 body.dark .badge.warn {
-  background: rgba(200, 137, 35, 0.15) !important;
-  border-color: rgba(200, 137, 35, 0.3) !important;
+  background: rgba(251, 191, 36, 0.14) !important;
+  border-color: rgba(251, 191, 36, 0.35) !important;
   color: #FBBF24 !important;
 }
 
 html[data-theme='dark'] .badge.crit,
 body.dark .badge.crit {
-  background: rgba(185, 45, 55, 0.15) !important;
-  border-color: rgba(185, 45, 55, 0.3) !important;
-  color: #F87171 !important;
+  background: rgba(251, 113, 133, 0.14) !important;
+  border-color: rgba(251, 113, 133, 0.35) !important;
+  color: #FB7185 !important;
 }
 
 html[data-theme='dark'] .badge.neutral,
 body.dark .badge.neutral {
-  background: rgba(20, 102, 170, 0.15) !important;
-  border-color: rgba(20, 102, 170, 0.3) !important;
-  color: #7FB3DF !important;
+  background: rgba(56, 189, 248, 0.14) !important;
+  border-color: rgba(56, 189, 248, 0.35) !important;
+  color: #38BDF8 !important;
 }
 
+/* TopBar, Dropdowns, and Modals */
 html[data-theme='dark'] .topbar,
 body.dark .topbar {
-  background: #101E2D !important;
-  border-bottom: 1px solid #223244 !important;
+  background: rgba(13, 25, 39, 0.95) !important;
+  border-bottom: 1px solid #1E2E42 !important;
 }
 
 html[data-theme='dark'] .dropdown,
 body.dark .dropdown {
-  background: #101E2D !important;
-  border-color: #223244 !important;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5) !important;
+  background: #0D1927 !important;
+  border-color: #1E2E42 !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
 }
 
+/* Filter Chips & Tabs */
 html[data-theme='dark'] .chip,
 body.dark .chip {
-  background: #101E2D !important;
-  border-color: #223244 !important;
-  color: #E6EDF3 !important;
+  background: #0D1927 !important;
+  border-color: #1E2E42 !important;
+  color: #E2E8F0 !important;
+}
+
+html[data-theme='dark'] .chip:hover,
+body.dark .chip:hover {
+  border-color: #38BDF8 !important;
+  color: #38BDF8 !important;
 }
 
 html[data-theme='dark'] .chip.active,
 body.dark .chip.active {
-  background: #1466AA !important;
-  border-color: #1466AA !important;
+  background: #0284C7 !important;
+  border-color: #0284C7 !important;
   color: #FFFFFF !important;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
 }
+
+html[data-theme='dark'] .tab.active,
+body.dark .tab.active {
+  color: #38BDF8;
+  border-bottom-color: #38BDF8;
+}
+
+/* Callouts */
+html[data-theme='dark'] .callout,
+body.dark .callout {
+  background: #0D1927;
+  border-left-color: #38BDF8;
+}
+
+html[data-theme='dark'] .callout.crimson,
+body.dark .callout.crimson {
+  background: rgba(251, 113, 133, 0.08);
+  border-left-color: #FB7185;
+}
+
+html[data-theme='dark'] .callout.teal,
+body.dark .callout.teal {
+  background: rgba(45, 212, 191, 0.08);
+  border-left-color: #2DD4BF;
+}
+
+html[data-theme='dark'] .callout.amber,
+body.dark .callout.amber {
+  background: rgba(251, 191, 36, 0.08);
+  border-left-color: #FBBF24;
+}
+
+/* Switches */
+html[data-theme='dark'] .switch,
+body.dark .switch {
+  background: #1E2E42;
+}
+
+html[data-theme='dark'] .switch.on,
+body.dark .switch.on {
+  background: #0284C7;
+}
+
+/* Custom Scrollbars in Dark Theme */
+html[data-theme='dark'] ::-webkit-scrollbar,
+body.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+html[data-theme='dark'] ::-webkit-scrollbar-track,
+body.dark ::-webkit-scrollbar-track {
+  background: #070E17;
+}
+
+html[data-theme='dark'] ::-webkit-scrollbar-thumb,
+body.dark ::-webkit-scrollbar-thumb {
+  background: #1E2E42;
+  border-radius: 4px;
+}
+
+html[data-theme='dark'] ::-webkit-scrollbar-thumb:hover,
+body.dark ::-webkit-scrollbar-thumb:hover {
+  background: #2A405A;
+}
+
 

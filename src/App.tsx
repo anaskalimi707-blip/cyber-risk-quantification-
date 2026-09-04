@@ -93,9 +93,13 @@ function EnterpriseWorkspace() {
   useEffect(() => {
     if (darkMode) {
       document.documentElement.setAttribute('data-theme', 'dark');
+      document.documentElement.classList.add('dark');
+      document.body.classList.add('dark');
       localStorage.setItem('cyberoptix_dark_mode', 'true');
     } else {
       document.documentElement.removeAttribute('data-theme');
+      document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
       localStorage.setItem('cyberoptix_dark_mode', 'false');
     }
   }, [darkMode]);
