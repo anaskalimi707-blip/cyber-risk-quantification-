@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavigationPage } from '../../types';
 import { Download, ShieldCheck, CheckCircle2, UserCheck, AlertTriangle } from 'lucide-react';
+import { RiskAcceptanceModal } from '../modals/RiskAcceptanceModal';
 
 interface ComplianceEvidenceProps {
   onNavigate: (page: NavigationPage) => void;
@@ -13,6 +14,8 @@ export const ComplianceEvidence: React.FC<ComplianceEvidenceProps> = ({
   onShowToast,
   onOpenDocument
 }) => {
+  const [exceptionModalReq, setExceptionModalReq] = useState<string | null>(null);
+
   const handleExportAudit = () => {
     if (onOpenDocument) {
       onOpenDocument("Q3 2026 Comprehensive Regulatory Compliance & Audit Ledger", "Regulatory Audit Dossier");
@@ -25,7 +28,7 @@ export const ComplianceEvidence: React.FC<ComplianceEvidenceProps> = ({
   };
 
   const handleApproveException = (req: string) => {
-    onShowToast?.('warning', 'Audit Exception Granted', `30-day temporary exception recorded for ${req} with Chief Risk Officer sign-off.`);
+    setExceptionModalReq(req);
   };
 
   return (
@@ -121,6 +124,17 @@ export const ComplianceEvidence: React.FC<ComplianceEvidenceProps> = ({
       <div className="callout" style={{ marginTop: '20px' }}>
         Every gap traces: <strong>Requirement → Control → Evidence → Asset → Business service → Financial risk → Remediation action.</strong>
       </div>
+
+      {/* Audit Exception Acceptance Modal */}
+      <RiskAcceptanceModal
+        isOpen={!!exceptionModalReq}
+        onClose={() => setExceptionModalReq(null)}
+        scenarioName={`Regulatory Requirement Gap (${exceptionModalReq})`}
+        expectedAnnualLoss="₹85 Lakh"
+        onConfirmAcceptance={(data) => {
+          onShowToast?.('warning', 'Audit Exception Recorded', `Approved ${data.durationDays}-day compliance exception for ${exceptionModalReq} signed by ${data.approver}.`);
+        }}
+      />
     </div>
   );
 };

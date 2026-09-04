@@ -120,6 +120,7 @@ export function App() {
               setSelectedScenarioId(id);
               setActivePage('scenarios');
             }}
+            onShowToast={showToast}
           />
         );
       case 'scenarios':
@@ -129,12 +130,13 @@ export function App() {
             onNavigate={(page) => setActivePage(page)}
             onBack={() => setActivePage('command-center')}
             onInspectEvidence={(ev) => setInspectedEvidence(ev)}
+            onShowToast={showToast}
           />
         );
       case 'assets':
-        return <AssetsExposure onNavigate={(page) => setActivePage(page)} />;
+        return <AssetsExposure onNavigate={(page) => setActivePage(page)} onShowToast={showToast} />;
       case 'controls':
-        return <ControlsMatrix onNavigate={(page) => setActivePage(page)} />;
+        return <ControlsMatrix onNavigate={(page) => setActivePage(page)} onShowToast={showToast} />;
       case 'optimizer':
         return (
           <InvestmentOptimizer 
@@ -144,22 +146,29 @@ export function App() {
           />
         );
       case 'what-if':
-        return <WhatIfSimulator onNavigate={(page) => setActivePage(page)} />;
+        return <WhatIfSimulator onNavigate={(page) => setActivePage(page)} onShowToast={showToast} />;
       case 'compliance':
-        return <ComplianceEvidence onNavigate={(page) => setActivePage(page)} />;
+        return (
+          <ComplianceEvidence 
+            onNavigate={(page) => setActivePage(page)} 
+            onShowToast={showToast}
+            onOpenDocument={openDocument}
+          />
+        );
       case 'incidents':
-        return <IncidentsResilience onNavigate={(page) => setActivePage(page)} />;
+        return <IncidentsResilience onNavigate={(page) => setActivePage(page)} onShowToast={showToast} />;
       case 'vendors':
-        return <ThirdPartyRisk onNavigate={(page) => setActivePage(page)} />;
+        return <ThirdPartyRisk onNavigate={(page) => setActivePage(page)} onShowToast={showToast} />;
       case 'reports':
         return (
           <ReportsView 
             onNavigate={(page) => setActivePage(page)} 
             onOpenDocument={openDocument}
+            onShowToast={showToast}
           />
         );
       case 'settings':
-        return <SettingsView />;
+        return <SettingsView onShowToast={showToast} />;
       default:
         return (
           <ExecutiveOverview 

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { NavigationPage } from '../../types';
-import { AlertCircle, Plus, CheckCircle2, Sliders, FileText } from 'lucide-react';
+import { AlertCircle, Plus, CheckCircle2, Sliders, FileText, Download } from 'lucide-react';
+import { LogIncidentModal } from '../modals/LogIncidentModal';
+import { ModelCalibrationModal } from '../modals/ModelCalibrationModal';
 
 interface IncidentsResilienceProps {
   onNavigate: (page: NavigationPage) => void;
@@ -9,20 +11,27 @@ interface IncidentsResilienceProps {
 
 export const IncidentsResilience: React.FC<IncidentsResilienceProps> = ({ onNavigate, onShowToast }) => {
   const [activeChip, setActiveChip] = useState('Risk scenario');
-  const [showLogModal, setShowLogModal] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-  const [newLoss, setNewLoss] = useState('15');
+  const [isLogModalOpen, setIsLogModalOpen] = useState(false);
+  const [isCalibrationModalOpen, setIsCalibrationModalOpen] = useState(false);
 
-  const handleLogIncident = (e: React.FormEvent) => {
-    e.preventDefault();
-    setShowLogModal(false);
-    onShowToast?.('success', 'Incident Recorded', `Logged incident "${newTitle || 'Payment Gateway Latency Spike'}" with empirical loss ₹${newLoss}L. Loss distribution weights updated.`);
-    setNewTitle('');
-  };
+  const initialIncidents = [
+    { id: 'INC-2026-014', title: 'Phishing led to account lockouts', sev: 'High', status: 'Contained', service: 'Corporate IT', estLoss: '₹18 lakh', actLoss: '₹6 lakh', time: '2 days ago', badgeClass: 'warn' },
+    { id: 'INC-2026-011', title: 'Vendor API outage', sev: 'Medium', status: 'Recovered', service: 'Trading Platform', estLoss: '₹9 lakh', actLoss: '₹4 lakh', time: '9 days ago', badgeClass: 'warn' },
+    { id: 'INC-2026-006', title: 'Attempted credential-stuffing', sev: 'Critical', status: 'Closed', service: 'Customer Data', estLoss: '₹40 lakh', actLoss: '₹0', time: '31 days ago', badgeClass: 'crit' },
+  ];
 
-  const handleCalibrateModel = () => {
-    onShowToast?.('success', 'Model Calibrated', 'Supervised regression & Bayesian loss distributions updated with empirical incident post-mortem data.');
-    setTimeout(() => onNavigate('scenarios'), 600);
+  const [incidents, setIncidents] = useState(initialIncidents);
+
+  const handleExport = () => {
+    const headers = "Incident ID,Title,Severity,Status,Affected Service,Estimated Loss,Actual Loss,Date\n";
+    const rows = incidents.map(i => `"${i.id}","${i.title}","${i.sev}","${i.status}","${i.service}","${i.estLoss}","${i.actLoss}","${i.time}"`).join("\n");
+    const blob = new Blob([headers + rows], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'cyberoptix_incidents_audit_ledger.csv';
+    link.click();
+    onShowToast?.('success', 'Incident Ledger Exported', 'Downloaded cyberoptix_incidents_audit_ledger.csv');
   };
 
   return (
@@ -34,12 +43,16 @@ export const IncidentsResilience: React.FC<IncidentsResilienceProps> = ({ onNavi
           <div className="period">Empirical feedback loop refining quantitative loss models with real breach telemetry</div>
         </div>
         <div className="masthead-actions flex items-center gap-2">
-          <button className="btn primary" onClick={() => setShowLogModal(true)}>
-            <Plus size={13} />
-            <span>Log Incident</span>
-          </button>
-        </div>
+        <button className="btn" onClick={handleExport}>
+          <Download size={13} />
+          <span>Export CSV</span>
+        </button>
+        <button className="btn primary" onClick={() => setIsLogModalOpen(true)}>
+          <Plus size={13} />
+          <span>Log Incident</span>
+        </button>
       </div>
+    </div>
 
       <table className="ledger-table">
         <thead>
@@ -54,40 +67,24 @@ export const IncidentsResilience: React.FC<IncidentsResilienceProps> = ({ onNavi
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td><strong>INC-2026-014</strong> · Phishing led to account lockouts</td>
-            <td><span className="badge warn">High</span></td>
-            <td><span className="badge neutral">Contained</span></td>
-            <td>Corporate IT</td>
-            <td className="num">₹18 lakh</td>
-            <td className="num font-bold text-teal">₹6 lakh</td>
-            <td style={{ color: 'var(--sub)' }}>2 days ago</td>
-          </tr>
-          <tr>
-            <td><strong>INC-2026-011</strong> · Vendor API outage</td>
-            <td><span className="badge warn">Medium</span></td>
-            <td><span className="badge good">Recovered</span></td>
-            <td>Trading Platform</td>
-            <td className="num">₹9 lakh</td>
-            <td className="num font-bold text-teal">₹4 lakh</td>
-            <td style={{ color: 'var(--sub)' }}>9 days ago</td>
-          </tr>
-          <tr>
-            <td><strong>INC-2026-006</strong> · Attempted credential-stuffing</td>
-            <td><span className="badge crit">Critical</span></td>
-            <td><span className="badge good">Closed</span></td>
-            <td>Customer Data</td>
-            <td className="num">₹40 lakh</td>
-            <td className="num font-bold text-teal">₹0</td>
-            <td style={{ color: 'var(--sub)' }}>31 days ago</td>
-          </tr>
+          {incidents.map(inc => (
+            <tr key={inc.id}>
+              <td><strong>{inc.id}</strong> · {inc.title}</td>
+              <td><span className={`badge ${inc.badgeClass}`}>{inc.sev}</span></td>
+              <td><span className="badge neutral">{inc.status}</span></td>
+              <td>{inc.service}</td>
+              <td className="num">{inc.estLoss}</td>
+              <td className="num font-bold text-teal">{inc.actLoss}</td>
+              <td style={{ color: 'var(--sub)' }}>{inc.time}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
 
       <div className="callout" style={{ marginTop: '22px' }}>
         <b>INC-2026-006 closed.</b> Root cause: missing rate limiting on the login endpoint. Update risk model with this finding?
         <div style={{ marginTop: '10px' }}>
-          <button className="btn sm primary" onClick={handleCalibrateModel}>
+          <button className="btn sm primary" onClick={() => setIsCalibrationModalOpen(true)}>
             Review changes &amp; calibrate model →
           </button>
         </div>
@@ -110,41 +107,34 @@ export const IncidentsResilience: React.FC<IncidentsResilienceProps> = ({ onNavi
       </div>
 
       {/* Log Incident Modal */}
-      {showLogModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-card p-6 rounded-lg border border-line shadow-2xl">
-            <h3 className="font-serif font-bold text-lg text-ink mb-2">Log New Security Incident</h3>
-            <p className="text-xs text-sub mb-4">Record real breach or outage losses to calibrate probabilistic risk curves.</p>
-            <form onSubmit={handleLogIncident} className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-sub mb-1">Incident Title</label>
-                <input 
-                  type="text" 
-                  className="w-full px-3 py-2 text-xs border border-line rounded bg-paper text-ink"
-                  placeholder="e.g. Distributed Denial of Service on Payment Switch"
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-sub mb-1">Empirical Loss (₹ Lakhs)</label>
-                <input 
-                  type="number" 
-                  className="w-full px-3 py-2 text-xs border border-line rounded bg-paper text-ink"
-                  value={newLoss}
-                  onChange={(e) => setNewLoss(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="flex justify-end gap-2 pt-3 border-t border-line">
-                <button type="button" className="btn" onClick={() => setShowLogModal(false)}>Cancel</button>
-                <button type="submit" className="btn primary">Record Incident</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <LogIncidentModal
+        isOpen={isLogModalOpen}
+        onClose={() => setIsLogModalOpen(false)}
+        onLogIncident={(incData) => {
+          const newEntry = {
+            id: `INC-2026-${Math.floor(100 + Math.random() * 900)}`,
+            title: incData.title,
+            sev: incData.severity.split(' ')[0],
+            status: 'Under Review',
+            service: incData.service,
+            estLoss: incData.loss,
+            actLoss: incData.loss,
+            time: 'Just now',
+            badgeClass: 'crit'
+          };
+          setIncidents(prev => [newEntry, ...prev]);
+          onShowToast?.('success', 'Incident Logged', `Registered "${incData.title}" in incident ledger. Model weights updated.`);
+        }}
+      />
+
+      {/* Bayesian Calibration Modal */}
+      <ModelCalibrationModal
+        isOpen={isCalibrationModalOpen}
+        onClose={() => setIsCalibrationModalOpen(false)}
+        onApplyCalibration={() => {
+          onShowToast?.('success', 'Bayesian Model Calibrated', 'Monte Carlo trials and Loss Event Frequency parameters updated.');
+        }}
+      />
     </div>
   );
 };

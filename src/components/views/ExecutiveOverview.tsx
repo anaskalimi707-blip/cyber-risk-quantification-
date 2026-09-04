@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavigationPage } from '../../types';
+import { ServiceDrilldownModal } from '../modals/ServiceDrilldownModal';
 
 interface ExecutiveOverviewProps {
   onNavigate: (page: NavigationPage) => void;
@@ -14,6 +15,17 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({
   onOpenDocument,
   onInspectEvidence
 }) => {
+  const [selectedService, setSelectedService] = useState<{
+    isOpen: boolean;
+    name: string;
+    exposure: string;
+    tolerance: string;
+  }>({
+    isOpen: false,
+    name: '',
+    exposure: '',
+    tolerance: ''
+  });
   return (
     <div className="animate-fade-in">
       {/* Masthead */}
@@ -175,42 +187,54 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({
 
       {/* EXPOSURE BY SERVICE */}
       <h2 className="section">Money at risk by business service</h2>
-      <div className="section-sub">Quantified financial exposure mapped to operational revenue pipelines.</div>
+      <div className="section-sub">Quantified financial exposure mapped to operational revenue pipelines. Click any service to drill down.</div>
       <div className="bar-list">
-        <div className="bar-row">
+        <div 
+          className="bar-row cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 p-2 rounded transition-colors"
+          onClick={() => setSelectedService({ isOpen: true, name: 'Payment Processing (UPI & Cards)', exposure: '₹9.1 cr', tolerance: 'Above tolerance' })}
+        >
           <div className="name">Payment Processing</div>
           <div className="bar-track">
             <div className="bar-fill crit" style={{ width: '88%' }}></div>
           </div>
           <div className="amt">₹9.1 cr</div>
-          <div className="status above">Above tolerance</div>
+          <div className="status above">Above tolerance →</div>
         </div>
 
-        <div className="bar-row">
+        <div 
+          className="bar-row cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 p-2 rounded transition-colors"
+          onClick={() => setSelectedService({ isOpen: true, name: 'Customer Data Platform', exposure: '₹5.4 cr', tolerance: 'Above tolerance' })}
+        >
           <div className="name">Customer Data</div>
           <div className="bar-track">
             <div className="bar-fill warn" style={{ width: '58%' }}></div>
           </div>
           <div className="amt">₹5.4 cr</div>
-          <div className="status above">Above tolerance</div>
+          <div className="status above">Above tolerance →</div>
         </div>
 
-        <div className="bar-row">
+        <div 
+          className="bar-row cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 p-2 rounded transition-colors"
+          onClick={() => setSelectedService({ isOpen: true, name: 'Institutional Trading Platform', exposure: '₹2.6 cr', tolerance: 'Within tolerance' })}
+        >
           <div className="name">Trading Platform</div>
           <div className="bar-track">
             <div className="bar-fill" style={{ width: '30%' }}></div>
           </div>
           <div className="amt">₹2.6 cr</div>
-          <div className="status within">Within tolerance</div>
+          <div className="status within">Within tolerance →</div>
         </div>
 
-        <div className="bar-row">
+        <div 
+          className="bar-row cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 p-2 rounded transition-colors"
+          onClick={() => setSelectedService({ isOpen: true, name: 'Corporate IT & Employee Ops', exposure: '₹1.3 cr', tolerance: 'Within tolerance' })}
+        >
           <div className="name">Corporate IT</div>
           <div className="bar-track">
             <div className="bar-fill" style={{ width: '14%' }}></div>
           </div>
           <div className="amt">₹1.3 cr</div>
-          <div className="status within">Within tolerance</div>
+          <div className="status within">Within tolerance →</div>
         </div>
       </div>
 
@@ -242,28 +266,43 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({
 
         <div>
           <h2 className="section" style={{ marginTop: 0 }}>Regulatory readiness</h2>
-          <div style={{ fontSize: '13px', color: 'var(--sub)', marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
-            <span>SEBI CSCRF</span>
-            <span style={{ fontWeight: 600, color: 'var(--text)' }}>76%</span>
-          </div>
-          <div className="readiness-bar">
-            <div className="readiness-fill" style={{ width: '76%', background: 'var(--teal)' }}></div>
-          </div>
-
-          <div style={{ fontSize: '13px', color: 'var(--sub)', marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
-            <span>NIST CSF 2.0</span>
-            <span style={{ fontWeight: 600, color: 'var(--text)' }}>82%</span>
-          </div>
-          <div className="readiness-bar">
-            <div className="readiness-fill" style={{ width: '82%', background: 'var(--teal)' }}></div>
+          <div 
+            className="cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => onNavigate('compliance')}
+          >
+            <div style={{ fontSize: '13px', color: 'var(--sub)', marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
+              <span>SEBI CSCRF</span>
+              <span style={{ fontWeight: 600, color: 'var(--text)' }}>76%</span>
+            </div>
+            <div className="readiness-bar">
+              <div className="readiness-fill" style={{ width: '76%', background: 'var(--teal)' }}></div>
+            </div>
           </div>
 
-          <div style={{ fontSize: '13px', color: 'var(--sub)', marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
-            <span>Evidence freshness</span>
-            <span style={{ fontWeight: 600, color: 'var(--amber)' }}>64%</span>
+          <div 
+            className="cursor-pointer hover:opacity-80 transition-opacity mt-3"
+            onClick={() => onNavigate('compliance')}
+          >
+            <div style={{ fontSize: '13px', color: 'var(--sub)', marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
+              <span>NIST CSF 2.0</span>
+              <span style={{ fontWeight: 600, color: 'var(--text)' }}>82%</span>
+            </div>
+            <div className="readiness-bar">
+              <div className="readiness-fill" style={{ width: '82%', background: 'var(--teal)' }}></div>
+            </div>
           </div>
-          <div className="readiness-bar">
-            <div className="readiness-fill" style={{ width: '64%', background: 'var(--amber)' }}></div>
+
+          <div 
+            className="cursor-pointer hover:opacity-80 transition-opacity mt-3"
+            onClick={() => onNavigate('compliance')}
+          >
+            <div style={{ fontSize: '13px', color: 'var(--sub)', marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
+              <span>Evidence freshness</span>
+              <span style={{ fontWeight: 600, color: 'var(--amber)' }}>64%</span>
+            </div>
+            <div className="readiness-bar">
+              <div className="readiness-fill" style={{ width: '64%', background: 'var(--amber)' }}></div>
+            </div>
           </div>
 
           <div className="kv" style={{ marginTop: '6px' }}>
@@ -276,6 +315,16 @@ export const ExecutiveOverview: React.FC<ExecutiveOverviewProps> = ({
       <footer className="disclaimer">
         Figures are estimates produced by the CyberOptix risk engine from connected evidence sources and reflect ranges, not guarantees. Confidence and data-quality scores accompany every figure above — see individual risk scenarios for assumptions and evidence. Illustrative example data shown for Acme Financial Services.
       </footer>
+
+      {/* Service Drilldown Modal */}
+      <ServiceDrilldownModal
+        isOpen={selectedService.isOpen}
+        onClose={() => setSelectedService(prev => ({ ...prev, isOpen: false }))}
+        serviceName={selectedService.name}
+        exposureAmount={selectedService.exposure}
+        toleranceStatus={selectedService.tolerance}
+        onNavigate={onNavigate}
+      />
     </div>
   );
 };

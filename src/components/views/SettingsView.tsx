@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Save, BellRing, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { WebhookDiagnosticModal } from '../modals/WebhookDiagnosticModal';
+import { TelemetryScannerModal } from '../modals/TelemetryScannerModal';
 
 interface SettingsViewProps {
   onShowToast?: (type: 'success' | 'warning' | 'info', title: string, description: string) => void;
@@ -19,6 +21,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onShowToast }) => {
   const [threatFeed, setThreatFeed] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Modals state
+  const [isWebhookModalOpen, setIsWebhookModalOpen] = useState(false);
+  const [isConnectorModalOpen, setIsConnectorModalOpen] = useState(false);
+
   const handleSave = () => {
     setIsSaving(true);
     setTimeout(() => {
@@ -28,11 +34,11 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onShowToast }) => {
   };
 
   const handleTestAlerts = () => {
-    onShowToast?.('info', 'Webhook Test Sent', 'Dispatched test payload to SecOps Slack channel (#cyber-risk-alerts) & PagerDuty.');
+    setIsWebhookModalOpen(true);
   };
 
   const handleResyncConnectors = () => {
-    onShowToast?.('info', 'Connectors Ingesting', 'Triggered full background resync across AWS, Qualys, Okta, and Mandiant feeds.');
+    setIsConnectorModalOpen(true);
   };
 
   return (
@@ -184,6 +190,24 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onShowToast }) => {
       <div className="callout" style={{ marginTop: '24px' }}>
         Settings changes require administrator permissions and generate an entry in the SHA-256 tamper-evident audit ledger.
       </div>
+
+      {/* Webhook Diagnostics Modal */}
+      <WebhookDiagnosticModal
+        isOpen={isWebhookModalOpen}
+        onClose={() => setIsWebhookModalOpen(false)}
+        onTestWebhook={(provider) => {
+          onShowToast?.('success', 'Webhook Delivered', `Handshake verified with ${provider} (HTTP 200 OK).`);
+        }}
+      />
+
+      {/* Connector Synchronization Modal */}
+      <TelemetryScannerModal
+        isOpen={isConnectorModalOpen}
+        onClose={() => setIsConnectorModalOpen(false)}
+        onScanComplete={() => {
+          onShowToast?.('success', 'Connectors Synchronized', 'All cloud, CMDB, and threat intelligence streams ingested.');
+        }}
+      />
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavigationPage } from '../../types';
 import { mockInvestments } from '../../data/mockData';
+import { ExecutiveSignOffModal } from '../modals/ExecutiveSignOffModal';
 
 interface InvestmentOptimizerProps {
   onNavigate: (page: NavigationPage) => void;
@@ -19,6 +20,7 @@ export const InvestmentOptimizer: React.FC<InvestmentOptimizerProps> = ({
     'inv-immutable-backups',
     'inv-recovery-exercises'
   ]);
+  const [isSignOffModalOpen, setIsSignOffModalOpen] = useState<boolean>(false);
 
   const handleToggleInvestment = (id: string) => {
     if (selectedInvestments.includes(id)) {
@@ -58,9 +60,7 @@ export const InvestmentOptimizer: React.FC<InvestmentOptimizerProps> = ({
           </button>
           <button 
             className="btn primary"
-            onClick={() => {
-              onShowToast('success', 'Portfolio Submitted for Sign-off', `Locked ₹${(totalCost / 100000).toFixed(0)} Lakh budget with SHA-256 audit entry.`);
-            }}
+            onClick={() => setIsSignOffModalOpen(true)}
           >
             Submit for executive sign-off
           </button>
@@ -193,6 +193,18 @@ export const InvestmentOptimizer: React.FC<InvestmentOptimizerProps> = ({
       <footer className="disclaimer">
         Optimization formulated as: Maximize Σ (ΔEAL_j × x_j) subject to Σ (Cost_j × x_j) ≤ Budget and dependency constraints. Illustrative estimate — not a guaranteed financial outcome.
       </footer>
+
+      {/* Executive Sign-Off Modal */}
+      <ExecutiveSignOffModal
+        isOpen={isSignOffModalOpen}
+        onClose={() => setIsSignOffModalOpen(false)}
+        totalCost={totalCost}
+        riskReduced={totalReduction}
+        roiPct={roiPct}
+        onConfirmSignOff={(signData) => {
+          onShowToast('success', 'Board Requisition Authorized', `Capital allocation of ₹${(totalCost / 100000).toFixed(0)} Lakh signed off by ${signData.approver}. Cost Center: ${signData.costCenter}`);
+        }}
+      />
     </div>
   );
 };

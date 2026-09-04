@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavigationPage } from '../../types';
 import { Plus, Calendar, Download, FileText, CheckCircle2 } from 'lucide-react';
+import { ReportSchedulerModal } from '../modals/ReportSchedulerModal';
+import { CustomReportBuilderModal } from '../modals/CustomReportBuilderModal';
 
 interface ReportsViewProps {
   onNavigate: (page: NavigationPage) => void;
@@ -9,8 +11,15 @@ interface ReportsViewProps {
 }
 
 export const ReportsView: React.FC<ReportsViewProps> = ({ onNavigate, onOpenDocument, onShowToast }) => {
+  const [isSchedulerOpen, setIsSchedulerOpen] = useState<boolean>(false);
+  const [isBuilderOpen, setIsBuilderOpen] = useState<boolean>(false);
+
   const handleScheduleDispatch = () => {
-    onShowToast?.('success', 'Automated Dispatch Configured', 'Recurring weekly executive risk briefing scheduled for every Monday at 08:00 AM IST to Board Members.');
+    setIsSchedulerOpen(true);
+  };
+
+  const handleGenerateNew = () => {
+    setIsBuilderOpen(true);
   };
 
   return (
@@ -28,10 +37,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ onNavigate, onOpenDocu
           </button>
           <button 
             className="btn primary"
-            onClick={() => {
-              onOpenDocument("Custom Q3 2026 Enterprise Risk Briefing", "Executive Report");
-              onShowToast?.('info', 'Report Generator', 'Compiled custom executive dossier with latest FAIR distributions.');
-            }}
+            onClick={handleGenerateNew}
           >
             <Plus size={13} />
             <span>Generate New Report</span>
@@ -126,6 +132,25 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ onNavigate, onOpenDocu
       <div className="callout" style={{ marginTop: '20px' }}>
         Every report includes generation timestamp, scope, data freshness, assumptions, evidence references, model version, approval history, and an estimate disclaimer.
       </div>
+
+      {/* Report Dispatch Scheduler Modal */}
+      <ReportSchedulerModal
+        isOpen={isSchedulerOpen}
+        onClose={() => setIsSchedulerOpen(false)}
+        onSaveSchedule={(sched) => {
+          onShowToast?.('success', 'Automated Dispatch Activated', `Scheduled "${sched.reportPackage}" to ${sched.recipients} on cadence: ${sched.frequency}.`);
+        }}
+      />
+
+      {/* Custom Report Builder Modal */}
+      <CustomReportBuilderModal
+        isOpen={isBuilderOpen}
+        onClose={() => setIsBuilderOpen(false)}
+        onGenerateReport={(title, sections) => {
+          onOpenDocument(title, "Custom Executive Dossier");
+          onShowToast?.('success', 'Custom Report Compiled', `Generated "${title}" with ${sections.length} modular sections.`);
+        }}
+      />
     </div>
   );
 };

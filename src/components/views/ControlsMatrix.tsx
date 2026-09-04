@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { NavigationPage } from '../../types';
+import { NavigationPage, DefensiveControl } from '../../types';
 import { Plus, RefreshCw, CheckCircle2, ShieldCheck, Download } from 'lucide-react';
+import { AddControlModal } from '../modals/AddControlModal';
+import { ControlHealthModal } from '../modals/ControlHealthModal';
 
 interface ControlsMatrixProps {
   onNavigate: (page: NavigationPage) => void;
@@ -11,16 +13,21 @@ export const ControlsMatrix: React.FC<ControlsMatrixProps> = ({ onNavigate, onSh
   const [searchTerm, setSearchTerm] = useState('');
   const [frameworkFilter, setFrameworkFilter] = useState('ALL');
   const [statusFilter, setStatusFilter] = useState('ALL');
-  const [isTesting, setIsTesting] = useState<string | null>(null);
+
+  // Modals state
+  const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
+  const [healthModalControl, setHealthModalControl] = useState<any | null>(null);
 
   const initialControls = [
-    { id: 'ctrl-1', name: 'Privileged-user MFA', framework: 'NIST CSF 2.0', status: 'Partly effective', coverage: 78, effectiveness: 64, risks: 'Ransomware, account takeover', potentialReduction: '₹1.4 crore', sub: 'Evidence updated 3 hours ago · owner: Identity Team', badgeClass: 'warn' },
-    { id: 'ctrl-2', name: 'Immutable backups', framework: 'SEBI CSCRF', status: 'Effective', coverage: 95, effectiveness: 91, risks: 'Ransomware, destructive attack', potentialReduction: '₹1.1 crore', sub: 'Evidence updated 1 day ago · owner: Infrastructure Team', badgeClass: 'good' },
-    { id: 'ctrl-3', name: 'Network segmentation', framework: 'NIST CSF 2.0', status: 'Implemented', coverage: 66, effectiveness: 53, risks: 'Ransomware, lateral movement', potentialReduction: '₹90 lakh', sub: 'Evidence updated 12 days ago · owner: Network Team', badgeClass: 'neutral' },
-    { id: 'ctrl-4', name: 'Full recovery testing', framework: 'SEBI CSCRF', status: 'Evidence stale', coverage: 0, effectiveness: 0, risks: 'Ransomware, outage', potentialReduction: '₹60 lakh', sub: 'No test recorded in 9 months', badgeClass: 'crit' },
+    { id: 'ctrl-1', name: 'Privileged-user MFA', framework: 'NIST CSF 2.0', status: 'Partly effective', coverage: 78, effectiveness: 64, risks: 'Ransomware, account takeover', potentialReduction: '₹1.4 crore', sub: 'Evidence updated 3 hours ago · owner: Identity Team', badgeClass: 'warn', frameworkRef: 'NIST PR.AC-1', owner: 'Identity Team' },
+    { id: 'ctrl-2', name: 'Immutable backups', framework: 'SEBI CSCRF', status: 'Effective', coverage: 95, effectiveness: 91, risks: 'Ransomware, destructive attack', potentialReduction: '₹1.1 crore', sub: 'Evidence updated 1 day ago · owner: Infrastructure Team', badgeClass: 'good', frameworkRef: 'SEBI CSCRF 4.1', owner: 'Infrastructure Team' },
+    { id: 'ctrl-3', name: 'Network segmentation', framework: 'NIST CSF 2.0', status: 'Implemented', coverage: 66, effectiveness: 53, risks: 'Ransomware, lateral movement', potentialReduction: '₹90 lakh', sub: 'Evidence updated 12 days ago · owner: Network Team', badgeClass: 'neutral', frameworkRef: 'NIST PR.AC-5', owner: 'Network Team' },
+    { id: 'ctrl-4', name: 'Full recovery testing', framework: 'SEBI CSCRF', status: 'Evidence stale', coverage: 0, effectiveness: 0, risks: 'Ransomware, outage', potentialReduction: '₹60 lakh', sub: 'No test recorded in 9 months', badgeClass: 'crit', frameworkRef: 'SEBI CSCRF 6.3', owner: 'Disaster Recovery Team' },
   ];
 
-  const filteredControls = initialControls.filter(c => {
+  const [controls, setControls] = useState(initialControls);
+
+  const filteredControls = controls.filter(c => {
     const matchSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase()) || c.risks.toLowerCase().includes(searchTerm.toLowerCase());
     const matchFw = frameworkFilter === 'ALL' || c.framework === frameworkFilter;
     const matchStatus = statusFilter === 'ALL' || c.status === statusFilter;
@@ -28,16 +35,23 @@ export const ControlsMatrix: React.FC<ControlsMatrixProps> = ({ onNavigate, onSh
   });
 
   const handleAddControl = () => {
-    onShowToast?.('info', 'New Control Onboarding', 'Control policy authoring wizard launched. Select framework taxonomy to proceed.');
+    setIsAddModalOpen(true);
   };
 
-  const handleTestControl = (ctrlName: string, id: string) => {
-    setIsTesting(id);
-    onShowToast?.('info', 'Automated Control Verification', `Running live policy audit & health check for "${ctrlName}"...`);
-    setTimeout(() => {
-      setIsTesting(null);
-      onShowToast?.('success', 'Control Verification Passed', `Telemetry telemetry synchronized for "${ctrlName}". Evidence hash stamped.`);
-    }, 1200);
+  const handleTestControl = (ctrl: any) => {
+    setHealthModalControl(ctrl);
+  };
+
+  const handleExport = () => {
+    const headers = "Control,Framework,Status,Coverage,Effectiveness,Related Risks,Potential Reduction\n";
+    const rows = controls.map(c => `"${c.name}","${c.framework}","${c.status}",${c.coverage}%,${c.effectiveness}%,"${c.risks}","${c.potentialReduction}"`).join("\n");
+    const blob = new Blob([headers + rows], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'cyberoptix_defensive_controls_matrix.csv';
+    link.click();
+    onShowToast?.('success', 'Controls Ledger Exported', 'Downloaded cyberoptix_defensive_controls_matrix.csv');
   };
 
   return (
@@ -108,15 +122,48 @@ export const ControlsMatrix: React.FC<ControlsMatrixProps> = ({ onNavigate, onSh
               </button>
               <button 
                 className="link-btn font-medium text-teal" 
-                onClick={() => handleTestControl(ctrl.name, ctrl.id)}
-                disabled={isTesting === ctrl.id}
+                onClick={() => handleTestControl(ctrl)}
               >
-                {isTesting === ctrl.id ? 'Testing...' : 'Test control →'}
+                Test control & inspect probe →
               </button>
             </div>
           </div>
         </div>
       ))}
+
+      {/* Add Control Modal */}
+      <AddControlModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onAddControl={(newCtrl) => {
+          const addedItem = {
+            id: `ctrl-${Date.now()}`,
+            name: newCtrl.name || 'Custom Control',
+            framework: newCtrl.frameworkRef || 'NIST CSF 2.0',
+            status: 'Effective',
+            coverage: newCtrl.coveragePct || 85,
+            effectiveness: 88,
+            risks: 'Lateral movement, misconfiguration',
+            potentialReduction: newCtrl.potentialRiskReductionFormatted || '₹95 lakh',
+            sub: `Evidence verified just now · owner: ${newCtrl.owner || 'SecOps'}`,
+            badgeClass: 'good',
+            frameworkRef: newCtrl.frameworkRef || 'NIST PR.AC-1',
+            owner: newCtrl.owner || 'SecOps'
+          };
+          setControls(prev => [addedItem, ...prev]);
+          onShowToast?.('success', 'Control Registered', `Added "${newCtrl.name}" to the live defense posture matrix.`);
+        }}
+      />
+
+      {/* Live Health Check Modal */}
+      <ControlHealthModal
+        isOpen={!!healthModalControl}
+        onClose={() => setHealthModalControl(null)}
+        control={healthModalControl}
+        onRunTest={() => {
+          onShowToast?.('success', 'Active Probe Successful', `Verified sensor health & coverage for "${healthModalControl?.name}".`);
+        }}
+      />
     </div>
   );
 };

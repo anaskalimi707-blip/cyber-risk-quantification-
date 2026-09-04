@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavigationPage } from '../../types';
 import { RotateCcw, BookmarkPlus, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { SimulationSnapshotModal } from '../modals/SimulationSnapshotModal';
 
 interface WhatIfSimulatorProps {
   onNavigate: (page: NavigationPage) => void;
@@ -14,6 +15,7 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({ onNavigate, on
   const [immutability, setImmutability] = useState(true);
   const [segmentation, setSegmentation] = useState(false);
   const [vendorFailure, setVendorFailure] = useState(false);
+  const [isSnapshotModalOpen, setIsSnapshotModalOpen] = useState<boolean>(false);
 
   // Dynamic simulation calculations
   const baseline = 4.2;
@@ -31,8 +33,7 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({ onNavigate, on
   };
 
   const handleSaveSnapshot = () => {
-    const snapId = `SNAP-${Date.now().toString().slice(-4)}`;
-    onShowToast?.('success', 'Simulation Snapshot Saved', `Saved snapshot #${snapId} (Simulated Loss: ₹${simulated.toFixed(1)} Cr).`);
+    setIsSnapshotModalOpen(true);
   };
 
   const handleApplyToPlan = () => {
@@ -156,6 +157,18 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({ onNavigate, on
           </div>
         </div>
       </div>
+
+      {/* Snapshot Persistence Modal */}
+      <SimulationSnapshotModal
+        isOpen={isSnapshotModalOpen}
+        onClose={() => setIsSnapshotModalOpen(false)}
+        threatLevel={8}
+        mfaCoverage={mfa}
+        simulatedRisk={`₹${simulated.toFixed(1)} Cr`}
+        onSaveSnapshot={(title, notes) => {
+          onShowToast?.('success', 'Simulation Snapshot Saved', `Persisted "${title}" to scenario repository.`);
+        }}
+      />
     </div>
   );
 };

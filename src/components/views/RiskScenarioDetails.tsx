@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { NavigationPage } from '../../types';
 import { mockRiskScenarios } from '../../data/mockData';
 import { ShieldCheck, ShieldAlert, ArrowLeft, CheckCircle2, FileSignature, AlertOctagon } from 'lucide-react';
+import { InsuranceQuoteModal } from '../modals/InsuranceQuoteModal';
+import { RiskAcceptanceModal } from '../modals/RiskAcceptanceModal';
+import { AttackStepDetailsModal } from '../modals/AttackStepDetailsModal';
 
 interface RiskScenarioDetailsProps {
   scenarioId: string;
@@ -23,6 +26,11 @@ export const RiskScenarioDetails: React.FC<RiskScenarioDetailsProps> = ({
   const [selectedAttackNode, setSelectedAttackNode] = useState<string>('3');
   const [decisionState, setDecisionState] = useState<'TREAT' | 'TRANSFER' | 'ACCEPT' | null>(null);
 
+  // Modals state
+  const [isInsuranceModalOpen, setIsInsuranceModalOpen] = useState<boolean>(false);
+  const [isAcceptanceModalOpen, setIsAcceptanceModalOpen] = useState<boolean>(false);
+  const [inspectedAttackNode, setInspectedAttackNode] = useState<{ id: string; name: string; status: string; controlWeakness?: string } | null>(null);
+
   const handleTreat = () => {
     setDecisionState('TREAT');
     onShowToast?.('success', 'Risk Treatment Initiated', `Generated ₹70L mitigation package for "${scenario.name}". Opening Investment Optimizer.`);
@@ -30,13 +38,11 @@ export const RiskScenarioDetails: React.FC<RiskScenarioDetailsProps> = ({
   };
 
   const handleTransfer = () => {
-    setDecisionState('TRANSFER');
-    onShowToast?.('info', 'Cyber Insurance Transfer Quote', `Request for ₹15 Crore excess liability policy dispatched to underwriters for "${scenario.name}".`);
+    setIsInsuranceModalOpen(true);
   };
 
   const handleAccept = () => {
-    setDecisionState('ACCEPT');
-    onShowToast?.('warning', 'Risk Exception Logged', `Formal executive risk acceptance logged in compliance audit ledger for "${scenario.name}". Expiry: 90 days.`);
+    setIsAcceptanceModalOpen(true);
   };
 
   return (
@@ -338,6 +344,39 @@ export const RiskScenarioDetails: React.FC<RiskScenarioDetailsProps> = ({
       <footer className="disclaimer">
         Figures are estimates produced by the CyberOptix risk engine from connected evidence sources.
       </footer>
+
+      {/* Cyber Insurance Modal */}
+      <InsuranceQuoteModal
+        isOpen={isInsuranceModalOpen}
+        onClose={() => setIsInsuranceModalOpen(false)}
+        scenarioName={scenario.name}
+        expectedAnnualLoss={scenario.expectedAnnualLossFormatted}
+        p95Loss={scenario.p95LossFormatted}
+        onConfirmTransfer={(details) => {
+          setDecisionState('TRANSFER');
+          onShowToast?.('success', 'Policy Bound & Risk Transferred', `Bound ${details.policyLimit} policy with ${details.underwriter} at ${details.premium}.`);
+        }}
+      />
+
+      {/* Risk Acceptance Exception Modal */}
+      <RiskAcceptanceModal
+        isOpen={isAcceptanceModalOpen}
+        onClose={() => setIsAcceptanceModalOpen(false)}
+        scenarioName={scenario.name}
+        expectedAnnualLoss={scenario.expectedAnnualLossFormatted}
+        onConfirmAcceptance={(data) => {
+          setDecisionState('ACCEPT');
+          onShowToast?.('warning', 'Risk Exception Logged', `Logged ${data.durationDays}-day risk exception under ${data.approver}.`);
+        }}
+      />
+
+      {/* Attack Step Deep-Dive Modal */}
+      <AttackStepDetailsModal
+        isOpen={!!inspectedAttackNode}
+        onClose={() => setInspectedAttackNode(null)}
+        node={inspectedAttackNode}
+        onNavigate={onNavigate}
+      />
     </div>
   );
 };

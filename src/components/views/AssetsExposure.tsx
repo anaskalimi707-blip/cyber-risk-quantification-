@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { NavigationPage } from '../../types';
 import { Upload, Download, RefreshCw, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { PatchRemediationModal } from '../modals/PatchRemediationModal';
+import { CredentialRotationModal } from '../modals/CredentialRotationModal';
+import { ConfigDriftModal } from '../modals/ConfigDriftModal';
+import { TelemetryScannerModal } from '../modals/TelemetryScannerModal';
 
 interface AssetsExposureProps {
   onNavigate: (page: NavigationPage) => void;
@@ -11,10 +15,15 @@ export const AssetsExposure: React.FC<AssetsExposureProps> = ({ onNavigate, onSh
   const [searchTerm, setSearchTerm] = useState('');
   const [serviceFilter, setServiceFilter] = useState('ALL');
   const [exposureFilter, setExposureFilter] = useState('ALL');
-  const [isScanning, setIsScanning] = useState(false);
+
+  // Modal states
+  const [patchModalAsset, setPatchModalAsset] = useState<any | null>(null);
+  const [rotateModalAsset, setRotateModalAsset] = useState<any | null>(null);
+  const [driftModalAsset, setDriftModalAsset] = useState<any | null>(null);
+  const [isScannerModalOpen, setIsScannerModalOpen] = useState<boolean>(false);
 
   const initialAssets = [
-    { id: 'ast-1', name: 'Payment API-04', service: 'Payment Processing', riskContrib: '₹82 lakh', exposure: 'Internet-facing', vulns: 4, coverage: 62, owner: 'Platform Team', action: 'Patch & restrict exposure', actionPage: 'scenarios' as NavigationPage },
+    { id: 'ast-1', name: 'Payment API-04', service: 'Payment Processing', riskContrib: '₹82 lakh', exposure: 'Internet-facing', vulns: 4, coverage: 62, owner: 'Platform Team', action: 'Patch & restrict exposure', actionType: 'patch' },
     { id: 'ast-2', name: 'CardAuth-DB-02', service: 'Payment Processing', riskContrib: '₹61 lakh', exposure: 'Internal', vulns: 2, coverage: 74, owner: 'Data Team', action: 'Rotate credentials', actionType: 'rotate' },
     { id: 'ast-3', name: 'Customer-CRM-01', service: 'Customer Data', riskContrib: '₹48 lakh', exposure: 'Internet-facing', vulns: 3, coverage: 58, owner: 'App Team', action: 'Enable FIDO2 MFA', actionPage: 'controls' as NavigationPage },
     { id: 'ast-4', name: 'Trading-GW-11', service: 'Trading Platform', riskContrib: '₹22 lakh', exposure: 'Internal', vulns: 1, coverage: 81, owner: 'Platform Team', action: 'Review config & ports', actionType: 'review' },
@@ -31,29 +40,35 @@ export const AssetsExposure: React.FC<AssetsExposureProps> = ({ onNavigate, onSh
   });
 
   const handleImport = () => {
-    onShowToast?.('info', 'Asset Telemetry Ingestion', 'Synchronized 1,420 infrastructure nodes from AWS, GCP, and ServiceNow CMDB.');
+    setIsScannerModalOpen(true);
   };
 
   const handleExport = () => {
-    onShowToast?.('success', 'Asset Ledger Exported', 'Downloaded assets_exposure_report_2026.csv with EPSS & revenue impact scores.');
+    // Generate CSV export
+    const headers = "Asset,Business Service,Risk Contribution,Exposure,Critical Vulns,Control Coverage,Owner\n";
+    const rows = assets.map(a => `"${a.name}","${a.service}","${a.riskContrib}","${a.exposure}",${a.vulns},${a.coverage}%,"${a.owner}"`).join("\n");
+    const blob = new Blob([headers + rows], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'cyberoptix_asset_exposure_matrix.csv';
+    link.click();
+    onShowToast?.('success', 'Asset Ledger Exported', 'Downloaded cyberoptix_asset_exposure_matrix.csv with EPSS & revenue impact scores.');
   };
 
   const handleScan = () => {
-    setIsScanning(true);
-    onShowToast?.('info', 'Continuous Discovery Scan', 'Scanning external attack surface and internal subnets for unmapped assets...');
-    setTimeout(() => {
-      setIsScanning(false);
-      onShowToast?.('success', 'Asset Inventory Current', 'All 1,420 assets mapped to active revenue pipelines with 100% telemetry coverage.');
-    }, 1200);
+    setIsScannerModalOpen(true);
   };
 
   const handleRowAction = (asset: any) => {
-    if (asset.actionPage) {
-      onNavigate(asset.actionPage);
+    if (asset.actionType === 'patch') {
+      setPatchModalAsset(asset);
     } else if (asset.actionType === 'rotate') {
-      onShowToast?.('success', 'Credential Rotation Initiated', `Automated password & TLS key rotation dispatched for ${asset.name}.`);
+      setRotateModalAsset(asset);
     } else if (asset.actionType === 'review') {
-      onShowToast?.('info', 'Security Review Ticket', `Created SecOps review ticket #SEC-892 for ${asset.name}.`);
+      setDriftModalAsset(asset);
+    } else if (asset.actionPage) {
+      onNavigate(asset.actionPage);
     }
   };
 
@@ -66,9 +81,9 @@ export const AssetsExposure: React.FC<AssetsExposureProps> = ({ onNavigate, onSh
           <div className="period">Find the systems creating the most business risk</div>
         </div>
         <div className="masthead-actions flex items-center gap-2">
-          <button className="btn" onClick={handleScan} disabled={isScanning}>
-            <RefreshCw size={13} className={isScanning ? 'animate-spin text-teal' : ''} />
-            <span>{isScanning ? 'Scanning...' : 'Scan Telemetry'}</span>
+          <button className="btn" onClick={handleScan}>
+            <RefreshCw size={13} />
+            <span>Scan Telemetry</span>
           </button>
           <button className="btn" onClick={handleImport}>
             <Upload size={13} />
@@ -150,6 +165,46 @@ export const AssetsExposure: React.FC<AssetsExposureProps> = ({ onNavigate, onSh
       <div className="callout" style={{ marginTop: '24px' }}>
         <b>Payment API-04</b> — risk contribution explanation: internet-facing, 4 unpatched critical vulnerabilities, and control coverage of only 62% on the host. Last seen 6 minutes ago via CMDB and vulnerability-scanner connectors.
       </div>
+
+      {/* Patch Remediation Work Order Modal */}
+      <PatchRemediationModal
+        isOpen={!!patchModalAsset}
+        onClose={() => setPatchModalAsset(null)}
+        assetName={patchModalAsset?.name || ''}
+        recommendedAction={patchModalAsset?.action || ''}
+        onConfirmPatch={(ticketId, window) => {
+          onShowToast?.('success', 'Work Order Dispatched', `Created Jira change request ${ticketId} scheduled for ${window}.`);
+        }}
+      />
+
+      {/* Credential Rotation Modal */}
+      <CredentialRotationModal
+        isOpen={!!rotateModalAsset}
+        onClose={() => setRotateModalAsset(null)}
+        assetName={rotateModalAsset?.name || ''}
+        onConfirmRotation={(vault) => {
+          onShowToast?.('success', 'Credentials Rotated', `Generated new TLS/API keys in ${vault} and revoked prior active sessions.`);
+        }}
+      />
+
+      {/* Config Drift Modal */}
+      <ConfigDriftModal
+        isOpen={!!driftModalAsset}
+        onClose={() => setDriftModalAsset(null)}
+        assetName={driftModalAsset?.name || ''}
+        onRemediateDrift={() => {
+          onShowToast?.('success', 'Terraform Drift Remediated', `Applied golden IaC baseline for ${driftModalAsset?.name}. Port 5432 ingress restricted.`);
+        }}
+      />
+
+      {/* Telemetry Discovery Scanner Modal */}
+      <TelemetryScannerModal
+        isOpen={isScannerModalOpen}
+        onClose={() => setIsScannerModalOpen(false)}
+        onScanComplete={() => {
+          onShowToast?.('success', 'Continuous Discovery Complete', 'All 1,420 assets synchronized with active telemetry and CMDB mappings.');
+        }}
+      />
     </div>
   );
 };
