@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Sparkles, Sun, Moon, Bell } from 'lucide-react';
+import { Search, Sparkles, Sun, Moon, Bell, ShieldCheck } from 'lucide-react';
 import { UserRole } from '../../types';
 
 interface TopBarProps {
@@ -22,59 +22,32 @@ export const TopBar: React.FC<TopBarProps> = ({
   activePageTitle
 }) => {
   return (
-    <header
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '12px 48px',
-        borderBottom: '1px solid var(--line)',
-        backgroundColor: 'var(--card)',
-        zIndex: 50,
-        gap: '1rem'
-      }}
-    >
+    <header className="sticky top-0 z-40 flex items-center justify-between px-6 md:px-12 py-3 bg-card/90 backdrop-blur-md border-b border-line gap-4 transition-all">
       {/* Search Input trigger */}
       <div 
         onClick={onOpenSearch}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '6px 12px',
-          borderRadius: '4px',
-          border: '1px solid var(--line)',
-          backgroundColor: 'var(--paper)',
-          color: 'var(--sub)',
-          fontSize: '13px',
-          cursor: 'pointer',
-          width: '100%',
-          maxWidth: '380px'
-        }}
+        className="flex items-center gap-2.5 px-3 py-1.5 rounded-md border border-line bg-paper/80 hover:bg-paper hover:border-slate-400 text-sub hover:text-text text-[13px] cursor-pointer w-full max-w-sm transition-all shadow-xs group"
       >
-        <Search size={14} />
-        <span style={{ flex: 1 }}>Search risks, assets, evidence...</span>
-        <kbd style={{ fontSize: '11px', padding: '1px 5px', borderRadius: '3px', backgroundColor: 'var(--card)', border: '1px solid var(--line)' }}>Ctrl K</kbd>
+        <Search size={14} className="group-hover:text-ink transition-colors" />
+        <span className="flex-1 select-none font-normal">Search risks, assets, evidence...</span>
+        <kbd className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-card border border-line text-sub shadow-xs">Ctrl K</kbd>
       </div>
 
       {/* Right Controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div className="flex items-center gap-3">
+        {/* Status Indicator */}
+        <div className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full bg-teal/10 border border-teal/20 text-teal text-xs font-medium">
+          <span className="w-1.5 h-1.5 rounded-full bg-teal animate-pulse" />
+          <span>Continuous Telemetry Live</span>
+        </div>
+
         {/* Role Switcher */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: 'var(--sub)' }}>
-          <span>Role:</span>
+        <div className="flex items-center gap-1.5 text-[13px] text-sub">
+          <span className="hidden sm:inline font-medium">Role:</span>
           <select
             value={currentRole}
             onChange={(e) => onChangeRole(e.target.value as UserRole)}
-            style={{
-              padding: '4px 8px',
-              borderRadius: '4px',
-              border: '1px solid var(--line)',
-              backgroundColor: 'var(--card)',
-              color: 'var(--text)',
-              fontSize: '13px',
-              fontWeight: 500,
-              cursor: 'pointer'
-            }}
+            className="px-2.5 py-1 rounded border border-line bg-card text-text text-[13px] font-medium cursor-pointer hover:border-slate-400 focus:outline-none focus:ring-1 focus:ring-ink transition-all"
           >
             <option value="CISO">CISO (Strategic / Board)</option>
             <option value="CFO">CFO / CRO (Financial Risk)</option>
@@ -86,32 +59,23 @@ export const TopBar: React.FC<TopBarProps> = ({
         {/* Ask AI Copilot */}
         <button
           onClick={onOpenAI}
-          className="btn-primary"
-          style={{ padding: '6px 12px', fontSize: '12.5px' }}
+          className="inline-flex items-center gap-1.5 px-3 py-1 rounded border border-ink bg-ink hover:bg-slate-900 text-white text-[12.5px] font-medium cursor-pointer shadow-xs transition-all hover:shadow-sm active:scale-98"
         >
-          <Sparkles size={14} />
+          <Sparkles size={13} className="text-amber" />
           <span>Ask AI</span>
         </button>
 
         {/* Theme Toggle */}
         <button
           onClick={onToggleTheme}
-          style={{
-            background: 'none',
-            border: '1px solid var(--line)',
-            borderRadius: '4px',
-            padding: '6px 8px',
-            cursor: 'pointer',
-            color: 'var(--text)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
+          className="p-1.5 rounded border border-line hover:border-slate-400 bg-card hover:bg-paper text-text cursor-pointer transition-colors shadow-xs"
           title="Toggle Theme"
+          aria-label="Toggle Theme"
         >
-          {darkMode ? <Sun size={15} /> : <Moon size={15} />}
+          {darkMode ? <Sun size={15} className="text-amber" /> : <Moon size={15} className="text-ink" />}
         </button>
       </div>
     </header>
   );
 };
+

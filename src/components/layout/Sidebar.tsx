@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavigationPage } from '../../types';
+import { Sparkles, Shield, Building2 } from 'lucide-react';
 
 interface SidebarProps {
   activePage: NavigationPage;
@@ -30,32 +31,38 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <nav className="rail">
-      <div className="brand">
-        Cyber<span>Optix</span>
+    <nav className="rail bg-ink text-slate-200 p-7 flex flex-col gap-1 h-screen sticky top-0 select-none shadow-xl">
+      <div className="brand font-serif text-[19px] text-white mb-8 tracking-wide flex items-center justify-between">
+        <span className="cursor-pointer" onClick={() => onNavigate('overview')}>
+          Cyber<span className="text-[#7FB3DF]">Optix</span>
+        </span>
+        <span className="text-[10px] font-sans font-semibold tracking-wider text-slate-400 uppercase bg-white/5 px-2 py-0.5 rounded border border-white/10">v2.4</span>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flex: 1 }}>
+      <div className="flex flex-col gap-0.5 flex-1 overflow-y-auto pr-1">
         {navItems.map((item) => {
           const isActive = activePage === item.id;
           return (
             <button
               key={item.id}
-              className={`nav-link ${isActive ? 'active' : ''}`}
+              className={`group flex items-center gap-2.5 px-3 py-2 rounded text-[13px] text-left cursor-pointer transition-all ${
+                isActive 
+                  ? 'bg-white/10 text-white font-medium shadow-xs' 
+                  : 'text-slate-300 hover:text-white hover:bg-white/5'
+              }`}
               onClick={() => onNavigate(item.id)}
             >
-              <span className="dot"></span>
-              <span style={{ flex: 1 }}>{item.label}</span>
+              <span className={`w-1.5 h-1.5 rounded-full transition-all shrink-0 ${
+                isActive ? 'bg-teal shadow-[0_0_8px_rgba(0,150,135,0.8)] scale-125' : 'bg-slate-500 group-hover:bg-slate-300'
+              }`} />
+              <span className="flex-1 truncate">{item.label}</span>
               {item.badge && (
                 <span 
-                  style={{
-                    fontSize: '10px',
-                    padding: '2px 5px',
-                    borderRadius: '3px',
-                    backgroundColor: item.badge === 'AI' ? 'rgba(0, 150, 135, 0.25)' : 'rgba(20, 102, 170, 0.25)',
-                    color: item.badge === 'AI' ? 'var(--teal)' : '#7FB3DF',
-                    fontWeight: 700
-                  }}
+                  className={`text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${
+                    item.badge === 'AI' 
+                      ? 'bg-teal/20 text-teal border border-teal/30' 
+                      : 'bg-ledger/20 text-[#7FB3DF] border border-ledger/30'
+                  }`}
                 >
                   {item.badge}
                 </span>
@@ -65,33 +72,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
         })}
       </div>
 
-      <div style={{ marginTop: '14px', marginBottom: '14px' }}>
+      <div className="my-3">
         <button
           onClick={onOpenAI}
-          style={{
-            width: '100%',
-            padding: '8px 12px',
-            borderRadius: '4px',
-            backgroundColor: 'rgba(0, 150, 135, 0.15)',
-            border: '1px solid rgba(0, 150, 135, 0.35)',
-            color: '#2DD4BF',
-            fontSize: '12.5px',
-            fontWeight: 600,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '6px'
-          }}
+          className="w-full py-2 px-3 rounded bg-teal/15 hover:bg-teal/25 border border-teal/35 hover:border-teal/50 text-[#2DD4BF] text-[12.5px] font-semibold cursor-pointer flex items-center justify-center gap-1.5 transition-all shadow-xs active:scale-98"
         >
-          <span>✦ Ask CyberOptix Copilot</span>
+          <Sparkles size={13} className="text-amber animate-pulse" />
+          <span>Ask CyberOptix Copilot</span>
         </button>
       </div>
 
-      <div className="foot">
-        <strong>Acme Financial Services</strong><br/>
-        CISO workspace · Enterprise Tier
+      <div className="pt-4 border-t border-white/10 text-[11.5px] text-slate-400 flex items-center gap-2">
+        <Building2 size={14} className="text-slate-500 shrink-0" />
+        <div className="truncate">
+          <strong className="text-slate-200 font-medium block truncate">Acme Financial Services</strong>
+          <span className="text-[10.5px] text-slate-400">CISO Workspace · Enterprise</span>
+        </div>
       </div>
     </nav>
   );
 };
+

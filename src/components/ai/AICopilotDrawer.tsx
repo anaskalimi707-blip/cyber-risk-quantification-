@@ -4,11 +4,8 @@ import {
   X, 
   Send, 
   ShieldCheck, 
-  FileText, 
-  AlertCircle, 
   Copy, 
   Check, 
-  ExternalLink,
   ChevronRight
 } from 'lucide-react';
 import { AIChatMessage, NavigationPage } from '../../types';
@@ -88,63 +85,24 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
 
   return (
     <div 
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'var(--bg-overlay)',
-        backdropFilter: 'blur(2px)',
-        zIndex: 90,
-        display: 'flex',
-        justifyContent: 'flex-end'
-      }}
+      className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex justify-end animate-fadeIn"
       onClick={onClose}
     >
       <div 
-        style={{
-          width: '100%',
-          maxWidth: '520px',
-          height: '100vh',
-          backgroundColor: 'var(--bg-card)',
-          borderLeft: '1px solid var(--border-color)',
-          boxShadow: 'var(--shadow-xl)',
-          display: 'flex',
-          flexDirection: 'column',
-          zIndex: 100
-        }}
+        className="w-full max-w-lg h-screen bg-card border-l border-line shadow-2xl flex flex-col z-60 animate-slideInRight"
         onClick={(e) => e.stopPropagation()}
-        className="animate-slide-in"
       >
         {/* Drawer Header */}
-        <div 
-          style={{
-            padding: '1.1rem 1.25rem',
-            borderBottom: '1px solid var(--border-color)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            backgroundColor: 'var(--bg-subtle)'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <div 
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '8px',
-                backgroundColor: 'var(--color-navy)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#38BDF8'
-              }}
-            >
-              <Sparkles size={18} />
+        <div className="px-5 py-4 border-b border-line flex items-center justify-between bg-paper/60 backdrop-blur-xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-md bg-ink text-cyan-300 flex items-center justify-center shadow-xs">
+              <Sparkles size={16} />
             </div>
             <div>
-              <div style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
+              <div className="font-bold text-sm text-ink font-serif">
                 CyberOptix AI Copilot
               </div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+              <div className="text-[11px] text-sub">
                 Grounded Financial Risk Reasoning • Model v1.0
               </div>
             </div>
@@ -152,48 +110,36 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
 
           <button
             onClick={onClose}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--text-muted)',
-              cursor: 'pointer',
-              padding: '4px'
-            }}
+            className="p-1 text-sub hover:text-text rounded cursor-pointer transition-colors"
+            aria-label="Close drawer"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Chat History */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((m) => (
             <div 
               key={m.id} 
-              style={{
-                alignSelf: m.sender === 'user' ? 'flex-end' : 'flex-start',
-                maxWidth: '92%'
-              }}
+              className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'} max-w-full`}
             >
               <div 
-                style={{
-                  padding: '0.85rem 1rem',
-                  borderRadius: 'var(--radius-lg)',
-                  backgroundColor: m.sender === 'user' ? 'var(--color-blue)' : 'var(--bg-subtle)',
-                  color: m.sender === 'user' ? '#FFFFFF' : 'var(--text-primary)',
-                  fontSize: '0.88rem',
-                  lineHeight: 1.5,
-                  border: m.sender === 'user' ? 'none' : '1px solid var(--border-color)'
-                }}
+                className={`p-3.5 rounded-lg text-xs leading-relaxed max-w-[92%] shadow-xs ${
+                  m.sender === 'user' 
+                    ? 'bg-ink text-white rounded-br-none' 
+                    : 'bg-paper text-text border border-line rounded-bl-none'
+                }`}
               >
-                <p style={{ margin: 0 }}>{m.text}</p>
+                <p className="m-0 text-[13px]">{m.text}</p>
 
                 {/* Key Findings list */}
                 {m.keyFindings && m.keyFindings.length > 0 && (
-                  <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color)' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.35rem', textTransform: 'uppercase' }}>
+                  <div className="mt-3 pt-2.5 border-t border-line/60">
+                    <div className="text-[11px] font-bold text-sub mb-1 uppercase tracking-wider">
                       Key Telemetry Findings
                     </div>
-                    <ul style={{ paddingLeft: '1.1rem', margin: 0, fontSize: '0.82rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <ul className="pl-4 m-0 text-xs space-y-1 list-disc text-text">
                       {m.keyFindings.map((kf, idx) => (
                         <li key={idx}>{kf}</li>
                       ))}
@@ -203,28 +149,17 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
 
                 {/* Verifiable Evidence Citations */}
                 {m.evidenceCitations && m.evidenceCitations.length > 0 && (
-                  <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color)' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.35rem', textTransform: 'uppercase' }}>
+                  <div className="mt-3 pt-2.5 border-t border-line/60">
+                    <div className="text-[11px] font-bold text-sub mb-1 uppercase tracking-wider">
                       Evidence & Telemetry Hashes
                     </div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                    <div className="flex flex-wrap gap-1.5">
                       {m.evidenceCitations.map((ev) => (
                         <span 
                           key={ev.id}
-                          style={{
-                            fontSize: '0.72rem',
-                            padding: '2px 7px',
-                            backgroundColor: 'var(--bg-card)',
-                            border: '1px solid var(--border-color)',
-                            borderRadius: '4px',
-                            color: 'var(--color-teal)',
-                            fontWeight: 600,
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px'
-                          }}
+                          className="text-[10.5px] px-2 py-0.5 bg-card border border-line rounded text-teal font-medium inline-flex items-center gap-1 font-mono"
                         >
-                          <ShieldCheck size={12} />
+                          <ShieldCheck size={11} />
                           {ev.source} [{ev.hashSnippet}]
                         </span>
                       ))}
@@ -234,7 +169,7 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
 
                 {/* Suggested Follow-up Actions */}
                 {m.suggestedActions && m.suggestedActions.length > 0 && (
-                  <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                  <div className="mt-3 pt-2 space-y-1.5">
                     {m.suggestedActions.map((act, idx) => (
                       <button
                         key={idx}
@@ -246,23 +181,10 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
                             handleSendMessage(act.label);
                           }
                         }}
-                        style={{
-                          textAlign: 'left',
-                          fontSize: '0.78rem',
-                          padding: '0.4rem 0.6rem',
-                          borderRadius: '6px',
-                          backgroundColor: 'var(--bg-card)',
-                          border: '1px solid var(--color-blue)',
-                          color: 'var(--color-blue)',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          fontWeight: 600
-                        }}
+                        className="w-full text-left text-xs px-2.5 py-1.5 rounded border border-ledger/30 hover:border-ledger bg-card hover:bg-ledger/5 text-ledger font-medium cursor-pointer flex items-center justify-between transition-colors"
                       >
                         <span>{act.label}</span>
-                        <ChevronRight size={14} />
+                        <ChevronRight size={13} className="shrink-0 text-ledger" />
                       </button>
                     ))}
                   </div>
@@ -271,15 +193,16 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
 
               {/* Message metadata footer */}
               {m.sender === 'assistant' && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.35rem', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                <div className="flex items-center gap-2 mt-1 text-[11px] text-sub px-1">
                   <span>Confidence: {m.confidence || 'High'}</span>
                   <span>•</span>
                   <span>Human signoff required</span>
                   <button 
                     onClick={() => copyToClipboard(m.text, m.id)}
-                    style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px' }}
+                    className="text-sub hover:text-ink cursor-pointer p-0.5 transition-colors"
+                    title="Copy text"
                   >
-                    {copiedId === m.id ? <Check size={12} color="var(--color-success)" /> : <Copy size={12} />}
+                    {copiedId === m.id ? <Check size={11} className="text-teal" /> : <Copy size={11} />}
                   </button>
                 </div>
               )}
@@ -287,51 +210,33 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
           ))}
 
           {isLoading && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-muted)', fontSize: '0.82rem', padding: '0.5rem' }}>
-              <Sparkles size={16} className="animate-spin" color="var(--color-teal)" />
+            <div className="flex items-center gap-2 text-sub text-xs p-2">
+              <Sparkles size={14} className="animate-spin text-teal" />
               <span>Analyzing telemetry & evaluating risk distributions...</span>
             </div>
           )}
         </div>
 
         {/* Input Bar */}
-        <div style={{ padding: '0.85rem 1rem', borderTop: '1px solid var(--border-color)', backgroundColor: 'var(--bg-card)' }}>
+        <div className="p-3 border-t border-line bg-card">
           <form 
             onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }}
-            style={{ display: 'flex', gap: '0.5rem' }}
+            className="flex gap-2"
           >
             <input
               type="text"
               placeholder="Ask about risk drivers, investments, or scenarios..."
               value={inputQuery}
               onChange={(e) => setInputQuery(e.target.value)}
-              style={{
-                flex: 1,
-                padding: '0.6rem 0.85rem',
-                borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--border-color)',
-                backgroundColor: 'var(--bg-subtle)',
-                color: 'var(--text-primary)',
-                fontSize: '0.86rem',
-                outline: 'none'
-              }}
+              className="flex-1 px-3 py-2 rounded border border-line bg-paper text-text placeholder:text-sub text-xs outline-none focus:border-ink transition-colors"
             />
             <button
               type="submit"
               disabled={isLoading || !inputQuery.trim()}
-              style={{
-                backgroundColor: 'var(--color-blue)',
-                color: '#FFFFFF',
-                border: 'none',
-                borderRadius: 'var(--radius-md)',
-                padding: '0 1rem',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
+              className="bg-ink hover:bg-slate-900 disabled:opacity-50 text-white rounded px-3.5 py-2 cursor-pointer disabled:cursor-not-allowed flex items-center justify-center transition-colors shadow-xs"
+              aria-label="Send query"
             >
-              <Send size={16} />
+              <Send size={14} />
             </button>
           </form>
         </div>
@@ -339,3 +244,4 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
     </div>
   );
 };
+

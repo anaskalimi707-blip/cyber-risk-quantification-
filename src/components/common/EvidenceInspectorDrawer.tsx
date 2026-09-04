@@ -31,109 +31,80 @@ export const EvidenceInspectorDrawer: React.FC<EvidenceInspectorDrawerProps> = (
 
   return (
     <div 
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'var(--bg-overlay)',
-        backdropFilter: 'blur(4px)',
-        zIndex: 110,
-        display: 'flex',
-        justifyContent: 'flex-end'
-      }}
+      className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex justify-end animate-fadeIn"
       onClick={onClose}
     >
       <div 
-        style={{
-          width: '100%',
-          maxWidth: '520px',
-          height: '100vh',
-          backgroundColor: 'var(--bg-card)',
-          backdropFilter: 'blur(24px)',
-          borderLeft: '1px solid var(--border-color)',
-          boxShadow: 'var(--shadow-xl)',
-          padding: '1.5rem',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          zIndex: 120
-        }}
+        className="w-full max-w-lg h-screen bg-card border-l border-line shadow-2xl p-6 flex flex-col justify-between z-60 animate-slideInRight"
         onClick={(e) => e.stopPropagation()}
-        className="animate-slide-in"
       >
-        <div>
+        <div className="overflow-y-auto pr-1">
           {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <ShieldCheck size={20} color="var(--color-teal)" />
-              <span style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)' }}>
+          <div className="flex justify-between items-center mb-5 pb-3 border-b border-line">
+            <div className="flex items-center gap-2">
+              <ShieldCheck size={20} className="text-teal" />
+              <span className="font-bold text-base text-ink">
                 Evidence Verifier & Audit Proof
               </span>
             </div>
-            <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
-              <X size={20} />
+            <button 
+              onClick={onClose} 
+              className="p-1 text-sub hover:text-text rounded cursor-pointer transition-colors"
+              aria-label="Close drawer"
+            >
+              <X size={18} />
             </button>
           </div>
 
           {/* Source and Verification Badge */}
-          <div style={{ padding: '1rem', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--bg-subtle)', border: '1px solid var(--border-color)', marginBottom: '1.25rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-              <span style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--text-primary)' }}>{evidence.source}</span>
-              <span className="badge badge-success">✓ Cryptographically Verified</span>
+          <div className="p-4 rounded-md bg-paper border border-line mb-5">
+            <div className="flex justify-between items-center mb-1.5">
+              <span className="font-bold text-sm text-ink">{evidence.source}</span>
+              <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded bg-teal/15 text-teal border border-teal/30">
+                ✓ Cryptographically Verified
+              </span>
             </div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+            <div className="text-xs text-sub font-mono">
               Collected: {evidence.timestamp}
             </div>
-            <div style={{ fontSize: '0.82rem', color: 'var(--text-primary)', marginTop: '0.5rem' }}>
+            <div className="text-[13px] text-text mt-2 font-normal leading-relaxed">
               {evidence.description}
             </div>
           </div>
 
           {/* Cryptographic SHA-256 Hash Box */}
-          <div style={{ marginBottom: '1.25rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.35rem' }}>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
+          <div className="mb-5">
+            <div className="flex justify-between items-center mb-1.5">
+              <span className="text-xs font-semibold text-sub uppercase tracking-wider">
                 SHA-256 Content Digest
               </span>
               <button 
                 onClick={handleCopyHash}
-                style={{ background: 'none', border: 'none', color: 'var(--color-blue)', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
+                className="text-ledger hover:text-ink text-xs font-medium cursor-pointer flex items-center gap-1 transition-colors"
               >
-                {copied ? <Check size={12} color="var(--color-success)" /> : <Copy size={12} />}
+                {copied ? <Check size={12} className="text-teal" /> : <Copy size={12} />}
                 <span>{copied ? 'Copied' : 'Copy Hash'}</span>
               </button>
             </div>
-            <div style={{ padding: '0.65rem 0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--bg-subtle)', fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--color-teal)', wordBreak: 'break-all', border: '1px solid var(--border-color)' }}>
+            <div className="p-2.5 rounded bg-slate-900 font-mono text-xs text-teal break-all border border-slate-800 shadow-inner select-all">
               {evidence.hash}
             </div>
           </div>
 
           {/* Raw Ingestion Payload Inspector */}
           <div>
-            <div style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '0.35rem' }}>
+            <div className="text-xs font-semibold text-sub uppercase tracking-wider mb-1.5">
               Raw Ingestion JSON Telemetry
             </div>
-            <pre 
-              style={{
-                padding: '0.85rem',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: 'rgba(10, 22, 40, 0.95)',
-                color: '#38BDF8',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '0.75rem',
-                maxHeight: '260px',
-                overflowY: 'auto',
-                lineHeight: 1.4
-              }}
-            >
+            <pre className="p-3.5 rounded-md bg-slate-950 text-cyan-400 font-mono text-xs max-h-72 overflow-y-auto leading-relaxed border border-slate-800 shadow-inner">
               {JSON.stringify(evidence.rawPayload, null, 2)}
             </pre>
           </div>
         </div>
 
-        <div style={{ paddingTop: '1rem', borderTop: '1px solid var(--border-color)' }}>
+        <div className="pt-4 border-t border-line">
           <button 
-            className="btn-secondary"
-            style={{ width: '100%', justifyContent: 'center' }}
+            className="w-full py-2 px-4 rounded border border-line bg-paper hover:bg-card text-ink text-sm font-medium transition-colors cursor-pointer shadow-xs"
             onClick={onClose}
           >
             Close Inspector
@@ -143,3 +114,4 @@ export const EvidenceInspectorDrawer: React.FC<EvidenceInspectorDrawerProps> = (
     </div>
   );
 };
+

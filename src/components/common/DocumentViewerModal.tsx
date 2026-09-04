@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { X, Printer, Download, CheckCircle2, Shield, Lock, FileText, QrCode } from 'lucide-react';
 
 interface DocumentViewerModalProps {
@@ -18,212 +18,167 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
 
   return (
     <div 
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'var(--bg-overlay)',
-        backdropFilter: 'blur(8px)',
-        zIndex: 110,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '1.5rem',
-        overflowY: 'auto'
-      }}
+      className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 md:p-6 overflow-y-auto animate-fadeIn"
       onClick={onClose}
     >
       <div 
-        style={{
-          width: '100%',
-          maxWidth: '860px',
-          maxHeight: '92vh',
-          backgroundColor: 'var(--bg-card)',
-          backdropFilter: 'blur(20px)',
-          borderRadius: 'var(--radius-xl)',
-          border: '1px solid var(--border-color)',
-          boxShadow: 'var(--shadow-xl)',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden'
-        }}
+        className="w-full max-w-4xl max-h-[92vh] bg-card rounded-lg border border-line shadow-2xl flex flex-col overflow-hidden text-text"
         onClick={(e) => e.stopPropagation()}
-        className="animate-fade-in"
       >
         {/* Modal Toolbar Header */}
-        <div 
-          style={{
-            padding: '1rem 1.5rem',
-            borderBottom: '1px solid var(--border-color)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            backgroundColor: 'var(--bg-subtle)'
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-            <FileText size={18} color="var(--color-blue)" />
-            <span style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--text-primary)' }}>
+        <div className="px-6 py-3.5 border-b border-line flex items-center justify-between bg-paper/60 backdrop-blur-xs">
+          <div className="flex items-center gap-2.5">
+            <FileText size={18} className="text-ledger" />
+            <span className="font-semibold text-sm text-ink">
               Document Preview: {documentType}
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+          <div className="flex items-center gap-2">
             <button 
-              className="btn-secondary"
-              style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded border border-line bg-card hover:bg-paper text-ink transition-colors cursor-pointer shadow-xs"
               onClick={() => window.print()}
             >
-              <Printer size={14} />
+              <Printer size={13} />
               <span>Print Document</span>
             </button>
             <button 
-              className="btn-primary"
-              style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded border border-ink bg-ink hover:bg-slate-900 text-white transition-colors cursor-pointer shadow-xs"
               onClick={() => {
                 alert(`Downloaded ${documentTitle} (PDF with Cryptographic Seal).`);
                 onClose();
               }}
             >
-              <Download size={14} />
+              <Download size={13} />
               <span>Download PDF</span>
             </button>
             <button 
               onClick={onClose}
-              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '4px' }}
+              className="p-1 rounded text-sub hover:text-text hover:bg-paper cursor-pointer transition-colors"
+              aria-label="Close modal"
             >
-              <X size={20} />
+              <X size={18} />
             </button>
           </div>
         </div>
 
         {/* Document Body (Printable Paper Canvas) */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '2rem', backgroundColor: 'rgba(0, 0, 0, 0.05)' }}>
-          <div 
-            className="document-paper"
-            style={{
-              maxWidth: '740px',
-              margin: '0 auto',
-              padding: '3rem 3.5rem',
-              fontFamily: 'var(--font-sans)',
-              backgroundColor: '#FFFFFF',
-              color: '#0F172A',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
-              borderRadius: '4px'
-            }}
-          >
+        <div className="flex-1 overflow-y-auto p-6 md:p-8 bg-slate-100">
+          <div className="max-w-2xl mx-auto p-8 md:p-12 font-sans bg-white text-slate-900 shadow-xl rounded border border-slate-200">
             {/* Header with Organization and Classification */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px solid #0C233F', paddingBottom: '1.25rem', marginBottom: '1.5rem' }}>
+            <div className="flex justify-between items-start border-b-2 border-ink pb-5 mb-6">
               <div>
-                <div style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.1em', color: '#1466AA', textTransform: 'uppercase' }}>
+                <div className="text-[11px] font-bold tracking-widest text-ledger uppercase">
                   CyberOptix Enterprise Risk Intelligence
                 </div>
-                <h1 style={{ fontSize: '1.45rem', fontWeight: 800, color: '#0C233F', marginTop: '4px' }}>
+                <h1 className="text-xl font-bold font-serif text-ink mt-1">
                   Acme Financial Services Limited
                 </h1>
-                <div style={{ fontSize: '0.82rem', color: '#64748B' }}>
+                <div className="text-xs text-sub mt-0.5">
                   Board Risk Committee • Executive Financial Cyber Risk Briefing
                 </div>
               </div>
 
-              <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '0.68rem', fontWeight: 800, padding: '3px 8px', backgroundColor: '#FEE2E2', color: '#B91C1C', borderRadius: '4px', border: '1px solid #FCA5A5' }}>
+              <div className="text-right">
+                <span className="text-[10px] font-bold px-2 py-0.5 bg-red-50 text-crimson rounded border border-red-200 inline-block">
                   CONFIDENTIAL • BOARD ONLY
                 </span>
-                <div style={{ fontSize: '0.72rem', color: '#64748B', marginTop: '6px' }}>
+                <div className="text-[11px] text-sub mt-1.5 font-mono">
                   Date: 03 September 2026
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#64748B' }}>
+                <div className="text-[11px] text-sub font-mono">
                   Ledger Ref: #COX-2026-Q3-0994
                 </div>
               </div>
             </div>
 
             {/* Executive Summary Block */}
-            <div style={{ marginBottom: '1.75rem' }}>
-              <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0C233F', marginBottom: '0.5rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.3rem' }}>
+            <div className="mb-6">
+              <h2 className="text-sm font-bold text-ink mb-2 border-b border-line pb-1">
                 1. Executive Summary & Financial Exposure
               </h2>
-              <p style={{ fontSize: '0.84rem', color: '#334155', lineHeight: 1.6 }}>
-                As of Q3 2026, Acme Financial Services' total aggregate Value-at-Risk (VaR 95%) is estimated at <strong>₹18.40 Crore</strong>, which currently exceeds the Board Risk Tolerance Limit of <strong>₹10.00 Crore</strong>. The Expected Annual Loss (EAL) is <strong>₹8.60 Crore</strong>, driven primarily by payment settlement disruption vectors and administrative credential exposure.
+              <p className="text-[13px] text-slate-700 leading-relaxed">
+                As of Q3 2026, Acme Financial Services' total aggregate Value-at-Risk (VaR 95%) is estimated at <strong className="text-crimson font-serif">₹18.40 Crore</strong>, which currently exceeds the Board Risk Tolerance Limit of <strong className="font-serif text-ink">₹10.00 Crore</strong>. The Expected Annual Loss (EAL) is <strong className="font-serif text-crimson">₹8.60 Crore</strong>, driven primarily by payment settlement disruption vectors and administrative credential exposure.
               </p>
             </div>
 
             {/* Financial Risk Summary Table */}
-            <div style={{ marginBottom: '1.75rem' }}>
-              <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0C233F', marginBottom: '0.5rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.3rem' }}>
+            <div className="mb-6">
+              <h2 className="text-sm font-bold text-ink mb-2 border-b border-line pb-1">
                 2. Quantified Exposure by Core Business Service
               </h2>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', textAlign: 'left', marginTop: '0.5rem' }}>
+              <table className="w-full border-collapse text-xs text-left mt-2">
                 <thead>
-                  <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '2px solid #CBD5E1', color: '#475569' }}>
-                    <th style={{ padding: '0.5rem' }}>Business Service</th>
-                    <th style={{ padding: '0.5rem' }}>Expected Yearly Loss</th>
-                    <th style={{ padding: '0.5rem' }}>95th-Percentile Loss</th>
-                    <th style={{ padding: '0.5rem' }}>Tolerance Status</th>
+                  <tr className="bg-slate-50 border-b-2 border-slate-300 text-slate-600 font-semibold">
+                    <th className="p-2">Business Service</th>
+                    <th className="p-2">Expected Yearly Loss</th>
+                    <th className="p-2">95th-Percentile Loss</th>
+                    <th className="p-2">Tolerance Status</th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
-                    <td style={{ padding: '0.6rem 0.5rem', fontWeight: 600 }}>Payment Processing (UPI & NetBanking)</td>
-                    <td style={{ padding: '0.6rem 0.5rem', fontWeight: 700, color: '#B91C1C' }}>₹4.20 Crore</td>
-                    <td style={{ padding: '0.6rem 0.5rem' }}>₹13.80 Crore</td>
-                    <td style={{ padding: '0.6rem 0.5rem', color: '#B91C1C', fontWeight: 600 }}>Above Tolerance</td>
+                <tbody className="divide-y divide-slate-200">
+                  <tr>
+                    <td className="p-2 font-medium">Payment Processing (UPI & NetBanking)</td>
+                    <td className="p-2 font-serif font-bold text-crimson">₹4.20 Crore</td>
+                    <td className="p-2 font-serif">₹13.80 Crore</td>
+                    <td className="p-2 text-crimson font-semibold">Above Tolerance</td>
                   </tr>
-                  <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
-                    <td style={{ padding: '0.6rem 0.5rem', fontWeight: 600 }}>Customer KYC & Account Vault</td>
-                    <td style={{ padding: '0.6rem 0.5rem', fontWeight: 700, color: '#B91C1C' }}>₹3.60 Crore</td>
-                    <td style={{ padding: '0.6rem 0.5rem' }}>₹9.40 Crore</td>
-                    <td style={{ padding: '0.6rem 0.5rem', color: '#B91C1C', fontWeight: 600 }}>Above Tolerance</td>
+                  <tr>
+                    <td className="p-2 font-medium">Customer KYC & Account Vault</td>
+                    <td className="p-2 font-serif font-bold text-crimson">₹3.60 Crore</td>
+                    <td className="p-2 font-serif">₹9.40 Crore</td>
+                    <td className="p-2 text-crimson font-semibold">Above Tolerance</td>
                   </tr>
-                  <tr style={{ borderBottom: '1px solid #E2E8F0' }}>
-                    <td style={{ padding: '0.6rem 0.5rem', fontWeight: 600 }}>Algorithmic Trading & Settlement</td>
-                    <td style={{ padding: '0.6rem 0.5rem', fontWeight: 700, color: '#B91C1C' }}>₹2.80 Crore</td>
-                    <td style={{ padding: '0.6rem 0.5rem' }}>₹7.20 Crore</td>
-                    <td style={{ padding: '0.6rem 0.5rem', color: '#B91C1C', fontWeight: 600 }}>Above Tolerance</td>
+                  <tr>
+                    <td className="p-2 font-medium">Algorithmic Trading & Settlement</td>
+                    <td className="p-2 font-serif font-bold text-crimson">₹2.80 Crore</td>
+                    <td className="p-2 font-serif">₹7.20 Crore</td>
+                    <td className="p-2 text-crimson font-semibold">Above Tolerance</td>
                   </tr>
                 </tbody>
               </table>
             </div>
 
             {/* Recommended Investment Package */}
-            <div style={{ marginBottom: '2rem' }}>
-              <h2 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0C233F', marginBottom: '0.5rem', borderBottom: '1px solid #E2E8F0', paddingBottom: '0.3rem' }}>
+            <div className="mb-6">
+              <h2 className="text-sm font-bold text-ink mb-2 border-b border-line pb-1">
                 3. Recommended Security Capital Allocation (₹70 Lakh Portfolio)
               </h2>
-              <p style={{ fontSize: '0.84rem', color: '#334155', lineHeight: 1.5, marginBottom: '0.75rem' }}>
+              <p className="text-[13px] text-slate-700 leading-relaxed mb-3">
                 The Mixed-Integer Linear Programming (MIP) optimization solver prescribes a targeted ₹70.0 Lakh capital commitment across three controls to bring overall enterprise exposure below board tolerance:
               </p>
 
-              <div style={{ padding: '0.85rem', backgroundColor: '#F0FDF4', border: '1px solid #86EFAC', borderRadius: '4px', fontSize: '0.82rem', color: '#166534' }}>
-                <div style={{ fontWeight: 700, marginBottom: '4px' }}>Approved Mitigation Bundle:</div>
-                <ul style={{ paddingLeft: '1.25rem', margin: 0 }}>
+              <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded text-xs text-emerald-900 leading-relaxed">
+                <div className="font-bold mb-1">Approved Mitigation Bundle:</div>
+                <ul className="pl-4 space-y-1 list-disc">
                   <li><strong>FIDO2 Hardware Keys (₹25L):</strong> Eliminates SMS credential bypass (Risk Reduced: ₹1.40 Cr)</li>
                   <li><strong>Air-Gapped Immutable Backups (₹35L):</strong> Guarantees 2-hour RTO (Risk Reduced: ₹1.10 Cr)</li>
                   <li><strong>Automated Recovery Drills (₹10L):</strong> Validates quarterly restore (Risk Reduced: ₹60 Lakh)</li>
                 </ul>
-                <div style={{ marginTop: '6px', fontWeight: 800 }}>
-                  Total Risk Reduced: ₹2.10 Crore • Illustrative ROI: 200% (3.0x Capital Multiplier)
+                <div className="mt-2.5 pt-2 border-t border-emerald-200 font-bold text-emerald-950 flex justify-between">
+                  <span>Total Risk Reduced: ₹2.10 Crore</span>
+                  <span>Illustrative ROI: 200% (3.0x Capital Multiplier)</span>
                 </div>
               </div>
             </div>
 
             {/* Cryptographic Verification Seal & Signatures */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '2px solid #0C233F', paddingTop: '1.25rem', marginTop: '2rem' }}>
+            <div className="flex justify-between items-center border-t-2 border-ink pt-4 mt-6">
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#009687', fontWeight: 700, fontSize: '0.8rem' }}>
-                  <CheckCircle2 size={16} />
+                <div className="flex items-center gap-1.5 text-teal font-bold text-xs">
+                  <CheckCircle2 size={15} />
                   <span>SHA-256 Cryptographic Tamper-Evident Seal Verified</span>
                 </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.68rem', color: '#64748B', marginTop: '2px' }}>
+                <div className="font-mono text-[10px] text-sub mt-0.5">
                   HASH: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
                 </div>
               </div>
 
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#0C233F' }}>
+              <div className="text-right">
+                <div className="text-xs font-bold text-ink">
                   Authorized Signoff:
                 </div>
-                <div style={{ fontSize: '0.78rem', fontStyle: 'italic', color: '#475569', marginTop: '2px' }}>
+                <div className="text-xs italic text-slate-600 mt-0.5">
                   CISO & CFO Risk Committee
                 </div>
               </div>
@@ -234,3 +189,4 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
     </div>
   );
 };
+

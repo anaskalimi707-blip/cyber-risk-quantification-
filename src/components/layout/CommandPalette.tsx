@@ -15,7 +15,6 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
-        // Handled by parent
       }
       if (e.key === 'Escape' && isOpen) {
         onClose();
@@ -40,92 +39,61 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
 
   return (
     <div 
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'var(--bg-overlay)',
-        backdropFilter: 'blur(3px)',
-        zIndex: 100,
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        paddingTop: '15vh'
-      }}
+      className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-start justify-center pt-24 md:pt-32 p-4 animate-fadeIn"
       onClick={onClose}
     >
       <div 
-        style={{
-          width: '100%',
-          maxWidth: '580px',
-          backgroundColor: 'var(--bg-card)',
-          borderRadius: 'var(--radius-lg)',
-          border: '1px solid var(--border-color)',
-          boxShadow: 'var(--shadow-xl)',
-          overflow: 'hidden'
-        }}
+        className="w-full max-w-xl bg-card rounded-lg border border-line shadow-2xl overflow-hidden animate-scaleUp"
         onClick={(e) => e.stopPropagation()}
       >
-        <div style={{ display: 'flex', alignItems: 'center', padding: '0.85rem 1rem', borderBottom: '1px solid var(--border-color)' }}>
-          <Search size={18} style={{ color: 'var(--text-muted)', marginRight: '0.75rem' }} />
+        <div className="flex items-center px-4 py-3 border-b border-line bg-paper/50">
+          <Search size={16} className="text-sub mr-3 shrink-0" />
           <input
             autoFocus
             type="text"
             placeholder="Type a command, risk scenario, or asset name..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            style={{
-              flex: 1,
-              background: 'none',
-              border: 'none',
-              outline: 'none',
-              color: 'var(--text-primary)',
-              fontSize: '0.95rem'
-            }}
+            className="flex-1 bg-transparent border-none outline-none text-ink placeholder:text-sub text-sm font-normal"
           />
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
-            <X size={18} />
+          <button 
+            onClick={onClose} 
+            className="p-1 text-sub hover:text-ink cursor-pointer transition-colors"
+            aria-label="Close"
+          >
+            <X size={16} />
           </button>
         </div>
 
-        <div style={{ maxHeight: '340px', overflowY: 'auto', padding: '0.5rem' }}>
-          {filtered.map((item, idx) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={idx}
-                onClick={() => {
-                  onNavigate(item.page);
-                  onClose();
-                }}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                  borderRadius: 'var(--radius-md)',
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  color: 'var(--text-primary)',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  fontSize: '0.88rem'
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--bg-subtle)')}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-              >
-                <div style={{ padding: '6px', borderRadius: '6px', backgroundColor: 'rgba(20, 102, 170, 0.1)', color: 'var(--color-blue)' }}>
-                  <Icon size={16} />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600 }}>{item.label}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{item.category}</div>
-                </div>
-              </button>
-            );
-          })}
+        <div className="max-h-80 overflow-y-auto p-2 divide-y divide-line/30">
+          {filtered.length === 0 ? (
+            <div className="py-8 text-center text-xs text-sub">No matching actions or scenarios found.</div>
+          ) : (
+            filtered.map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    onNavigate(item.page);
+                    onClose();
+                  }}
+                  className="w-full px-3 py-2.5 flex items-center gap-3 rounded text-left hover:bg-paper cursor-pointer transition-colors group"
+                >
+                  <div className="p-2 rounded bg-ledger/10 text-ledger group-hover:bg-ledger group-hover:text-white transition-colors shrink-0">
+                    <Icon size={15} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-[13px] font-medium text-text group-hover:text-ink truncate">{item.label}</div>
+                    <div className="text-[11px] text-sub">{item.category}</div>
+                  </div>
+                </button>
+              );
+            })
+          )}
         </div>
       </div>
     </div>
   );
 };
+

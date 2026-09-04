@@ -1,9 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+
+  --color-ink: #0C233F;
+  --color-ledger: #1466AA;
+  --color-teal: #009687;
+  --color-amber: #C88923;
+  --color-crimson: #B92D37;
+  --color-paper: #F6F8FA;
+  --color-card: #FFFFFF;
+  --color-text: #1E2832;
+  --color-sub: #64748B;
+  --color-line: #D9E3EC;
+
+  --font-serif: 'Fraunces', Georgia, serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
 
 :root{
   --ink:#0C233F; --ledger:#1466AA; --teal:#009687; --amber:#C88923; --crimson:#B92D37;
   --paper:#F6F8FA; --card:#FFFFFF; --text:#1E2832; --sub:#64748B; --line:#D9E3EC;
 }
+
 *{box-sizing:border-box;}
 body{ margin:0; background:var(--paper); color:var(--text); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; }
 .serif{ font-family:'Fraunces', serif; }
