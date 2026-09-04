@@ -162,9 +162,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         className="bg-ink text-slate-200 py-6 px-2 flex flex-col items-center h-screen sticky top-0 select-none shadow-xl border-r border-white/10 z-30 transition-all"
         style={{ width: '64px' }}
       >
+        <div 
+          onClick={() => onNavigate('overview')} 
+          className="w-8 h-8 mb-4 rounded-lg overflow-hidden cursor-pointer ring-1 ring-white/20 hover:scale-105 transition-transform flex-shrink-0"
+          title="CyberOptix Enterprise"
+        >
+          <img src="/cyberoptix-logo.png" alt="CyberOptix" className="w-full h-full object-cover" />
+        </div>
+
         <button 
           onClick={onToggleCollapse} 
-          className="p-1.5 mb-5 text-slate-400 hover:text-white rounded bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
+          className="p-1.5 mb-4 text-slate-400 hover:text-white rounded bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
           title="Expand Sidebar"
         >
           <ChevronRight size={18} />
@@ -212,9 +220,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
     >
       {/* Brand & Collapse Header */}
       <div className="brand font-serif text-[19px] text-white mb-4 tracking-wide flex items-center justify-between">
-        <span className="cursor-pointer truncate" onClick={() => onNavigate('overview')}>
-          Cyber<span className="text-[#7FB3DF]">Optix</span>
-        </span>
+        <div className="flex items-center gap-2.5 cursor-pointer truncate" onClick={() => onNavigate('overview')}>
+          <img src="/cyberoptix-logo.png" alt="CyberOptix" className="w-6 h-6 rounded object-cover shadow-sm ring-1 ring-white/20" />
+          <span className="truncate">
+            Cyber<span className="text-[#7FB3DF]">Optix</span>
+          </span>
+        </div>
         <div className="flex items-center gap-1.5">
           <span className="text-[10px] font-sans font-semibold tracking-wider text-slate-400 uppercase bg-white/5 px-2 py-0.5 rounded border border-white/10">v2.4</span>
           <button 

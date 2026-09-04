@@ -68,8 +68,9 @@ export const LoginView: React.FC<LoginViewProps> = ({ onShowToast }) => {
         {/* Left Column: Brand & Value Proposition */}
         <div className="md:col-span-5 bg-ink p-8 text-white flex flex-col justify-between relative overflow-hidden">
           <div className="relative z-10">
-            <div className="font-serif text-2xl tracking-wide mb-6">
-              Cyber<span className="text-[#7FB3DF]">Optix</span>
+            <div className="flex items-center gap-3 font-serif text-2xl tracking-wide mb-6">
+              <img src="/cyberoptix-logo.png" alt="CyberOptix" className="w-9 h-9 rounded-lg object-cover ring-1 ring-white/20 shadow-md" />
+              <span>Cyber<span className="text-[#7FB3DF]">Optix</span></span>
             </div>
             <div className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
               Enterprise Cyber Risk Quantification

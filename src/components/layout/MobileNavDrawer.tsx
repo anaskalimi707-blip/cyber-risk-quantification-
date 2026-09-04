@@ -97,8 +97,8 @@ export const MobileNavDrawer: React.FC<MobileNavDrawerProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-line bg-paper/80">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded bg-gradient-to-tr from-sky-600 to-teal flex items-center justify-center text-white font-serif font-bold text-sm shadow-xs">
-              CO
+            <div className="w-8 h-8 rounded-lg overflow-hidden ring-1 ring-ledger/30 shadow-xs flex-shrink-0">
+              <img src="/cyberoptix-logo.png" alt="CyberOptix" className="w-full h-full object-cover" />
             </div>
             <div>
               <div className="font-serif font-medium text-base text-text leading-tight">

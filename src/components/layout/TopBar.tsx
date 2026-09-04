@@ -66,7 +66,8 @@ export const TopBar: React.FC<TopBarProps> = ({
             <Menu size={18} />
           </button>
         )}
-        <div className="font-serif font-semibold text-sm text-text truncate max-w-[140px]">
+        <img src="/cyberoptix-logo.png" alt="CyberOptix" className="w-6 h-6 rounded object-cover shadow-2xs" />
+        <div className="font-serif font-semibold text-sm text-text truncate max-w-[130px]">
           {activePageTitle}
         </div>
       </div>
