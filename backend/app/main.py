@@ -3,6 +3,7 @@ import time
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.exceptions import RequestValidationError
 from app.core.config import settings
 from app.core.logging import logger
@@ -37,6 +38,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Response Compression Middleware (> 1000 bytes)
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
 # CORS Middleware
 app.add_middleware(
     CORSMiddleware,
@@ -48,6 +52,7 @@ app.add_middleware(
 
 # Exception Handlers (RFC 7807 Compliance)
 app.add_exception_handler(CyberOptixException, cyberoptix_exception_handler)
+
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(Exception, generic_exception_handler)
 

@@ -2,13 +2,14 @@ import time
 import numpy as np
 from scipy import stats
 from typing import Dict, Any, List, Optional
+from functools import lru_cache
 from app.engines.fair_engine import FAIREngine
 
 
 class MonteCarloEngine:
     """
     AI-Powered Probabilistic Cyber Risk Quantification (CRQ) Simulator
-    Running 10,000 to 50,000 iterations.
+    Running 10,000 to 50,000 iterations with vectorized NumPy execution.
     Features:
       - Threat events via Poisson process
       - Multi-distribution loss modeling (Log-Normal, Beta-PERT, Weibull)
@@ -49,19 +50,33 @@ class MonteCarloEngine:
         # 3. Defensive control barrier effectiveness
         effective_defense = max(0.0, min(0.99, control_strength))
         
-        # Realized loss events per year = count * vuln_prob * (1 - defense)
-        annual_loss_events = np.zeros(iterations, dtype=int)
-        for i in range(iterations):
-            count = event_counts[i]
-            if count > 0:
-                p_success = vuln_probabilities[i] * (1.0 - effective_defense)
-                annual_loss_events[i] = np.random.binomial(n=count, p=min(1.0, max(0.0, p_success)))
+        # Realized loss events per year = count * vuln_prob * (1 - defense) (Vectorized)
+        p_success = np.clip(vuln_probabilities * (1.0 - effective_defense), 0.0, 1.0)
+        annual_loss_events = np.random.binomial(n=event_counts, p=p_success)
 
-        # 4. Sample Loss Magnitude per loss event based on chosen distribution
+        # 4. Sample Loss Magnitude per loss event based on chosen distribution (Vectorized)
         mu, sigma = FAIREngine.calculate_lognormal_parameters(loss_magnitude_median, loss_magnitude_p95)
+        annual_total_losses = np.zeros(iterations, dtype=float)
         
-        annual_total_losses = np.zeros(iterations)
-        
+        total_events = int(np.sum(annual_loss_events))
+        if total_events > 0:
+            if distribution_type == "beta_pert":
+                min_val = loss_magnitude_median * 0.2
+                max_val = loss_magnitude_p95 * 1.8
+                alpha = 1 + 4 * ((loss_magnitude_median - min_val) / max(1.0, max_val - min_val))
+                beta_param = 1 + 4 * ((max_val - loss_magnitude_median) / max(1.0, max_val - min_val))
+                all_losses = min_val + np.random.beta(alpha, beta_param, size=total_events) * (max_val - min_val)
+            elif distribution_type == "weibull":
+                shape = 1.6
+                scale = loss_magnitude_median / (np.log(2) ** (1 / shape))
+                all_losses = np.random.weibull(shape, size=total_events) * scale
+            else:
+                all_losses = np.random.lognormal(mean=mu, sigma=sigma, size=total_events)
+            
+            # Map event losses back to corresponding simulation iterations via NumPy
+            iter_indices = np.repeat(np.arange(iterations), annual_loss_events)
+            np.add.at(annual_total_losses, iter_indices, all_losses)
+
         # Multi-tier loss components tracking
         tier_fractions = {
             "business_interruption": 0.38,
@@ -71,27 +86,6 @@ class MonteCarloEngine:
             "third_party_liability": 0.08,
             "reputational_churn": 0.05
         }
-
-        for i in range(iterations):
-            events = annual_loss_events[i]
-            if events > 0:
-                if distribution_type == "beta_pert":
-                    # Beta-PERT: scaled between median*0.2 and p95*1.8
-                    min_val = loss_magnitude_median * 0.2
-                    max_val = loss_magnitude_p95 * 1.8
-                    alpha = 1 + 4 * ((loss_magnitude_median - min_val) / max(1.0, max_val - min_val))
-                    beta_param = 1 + 4 * ((max_val - loss_magnitude_median) / max(1.0, max_val - min_val))
-                    event_losses = min_val + np.random.beta(alpha, beta_param, size=events) * (max_val - min_val)
-                elif distribution_type == "weibull":
-                    # Weibull distribution
-                    shape = 1.6
-                    scale = loss_magnitude_median / (np.log(2) ** (1 / shape))
-                    event_losses = np.random.weibull(shape, size=events) * scale
-                else:
-                    # Default: Lognormal distribution
-                    event_losses = np.random.lognormal(mean=mu, sigma=sigma, size=events)
-
-                annual_total_losses[i] = np.sum(event_losses)
 
         # 5. Compute Financial Risk Metrics
         expected_annual_loss = float(np.mean(annual_total_losses))
@@ -188,3 +182,4 @@ class MonteCarloEngine:
             "sensitivity_rankings": sensitivity_rankings,
             "execution_time_ms": exec_time,
         }
+

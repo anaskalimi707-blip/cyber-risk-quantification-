@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LoginView } from './components/auth/LoginView';
 import { LockScreenModal } from './components/auth/LockScreenModal';
@@ -11,22 +11,39 @@ import { DocumentViewerModal } from './components/common/DocumentViewerModal';
 import { EvidenceInspectorDrawer } from './components/common/EvidenceInspectorDrawer';
 import { ToastContainer, ToastMessage } from './components/common/ToastContainer';
 
-import { ExecutiveOverview } from './components/views/ExecutiveOverview';
-import { RiskCommandCenter } from './components/views/RiskCommandCenter';
-import { RiskScenarioDetails } from './components/views/RiskScenarioDetails';
-import { AssetsExposure } from './components/views/AssetsExposure';
-import { ControlsMatrix } from './components/views/ControlsMatrix';
-import { InvestmentOptimizer } from './components/views/InvestmentOptimizer';
-import { WhatIfSimulator } from './components/views/WhatIfSimulator';
-import { ComplianceEvidence } from './components/views/ComplianceEvidence';
-import { ConnectorsView } from './components/views/ConnectorsView';
-import { AuditLogView } from './components/views/AuditLogView';
-import { IncidentsResilience } from './components/views/IncidentsResilience';
-import { ThirdPartyRisk } from './components/views/ThirdPartyRisk';
-import { ReportsView } from './components/views/ReportsView';
-import { SettingsView } from './components/views/SettingsView';
+// Code-split / Lazy-loaded Views
+const ExecutiveOverview = lazy(() => import('./components/views/ExecutiveOverview').then(m => ({ default: m.ExecutiveOverview })));
+const RiskCommandCenter = lazy(() => import('./components/views/RiskCommandCenter').then(m => ({ default: m.RiskCommandCenter })));
+const RiskScenarioDetails = lazy(() => import('./components/views/RiskScenarioDetails').then(m => ({ default: m.RiskScenarioDetails })));
+const AssetsExposure = lazy(() => import('./components/views/AssetsExposure').then(m => ({ default: m.AssetsExposure })));
+const ControlsMatrix = lazy(() => import('./components/views/ControlsMatrix').then(m => ({ default: m.ControlsMatrix })));
+const InvestmentOptimizer = lazy(() => import('./components/views/InvestmentOptimizer').then(m => ({ default: m.InvestmentOptimizer })));
+const WhatIfSimulator = lazy(() => import('./components/views/WhatIfSimulator').then(m => ({ default: m.WhatIfSimulator })));
+const ComplianceEvidence = lazy(() => import('./components/views/ComplianceEvidence').then(m => ({ default: m.ComplianceEvidence })));
+const ConnectorsView = lazy(() => import('./components/views/ConnectorsView').then(m => ({ default: m.ConnectorsView })));
+const AuditLogView = lazy(() => import('./components/views/AuditLogView').then(m => ({ default: m.AuditLogView })));
+const IncidentsResilience = lazy(() => import('./components/views/IncidentsResilience').then(m => ({ default: m.IncidentsResilience })));
+const ThirdPartyRisk = lazy(() => import('./components/views/ThirdPartyRisk').then(m => ({ default: m.ThirdPartyRisk })));
+const ReportsView = lazy(() => import('./components/views/ReportsView').then(m => ({ default: m.ReportsView })));
+const SettingsView = lazy(() => import('./components/views/SettingsView').then(m => ({ default: m.SettingsView })));
 
 import { NavigationPage, UserRole } from './types';
+
+// Financial ledger loading skeleton
+const ViewLoadingSkeleton = () => (
+  <div className="p-8 space-y-6 animate-pulse select-none">
+    <div className="h-8 bg-line/60 rounded w-1/3 mb-2" />
+    <div className="h-4 bg-line/40 rounded w-1/2 mb-6" />
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="h-24 bg-card rounded-lg border border-line" />
+      <div className="h-24 bg-card rounded-lg border border-line" />
+      <div className="h-24 bg-card rounded-lg border border-line" />
+      <div className="h-24 bg-card rounded-lg border border-line" />
+    </div>
+    <div className="h-72 bg-card rounded-lg border border-line" />
+  </div>
+);
+
 
 function EnterpriseWorkspace() {
   const { user, role, isAuthenticated, switchRole } = useAuth();
@@ -253,7 +270,9 @@ function EnterpriseWorkspace() {
         />
 
         <main className="statement-main">
-          {renderActiveView()}
+          <Suspense fallback={<ViewLoadingSkeleton />}>
+            {renderActiveView()}
+          </Suspense>
         </main>
       </div>
 

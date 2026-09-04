@@ -26,14 +26,24 @@ export default defineConfig({
     target: 'esnext',
     outDir: 'dist',
     sourcemap: false,
-    chunkSizeWarningLimit: 1000,
+    cssCodeSplit: true,
+    minify: 'esbuild',
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react': ['react', 'react-dom'],
-          'vendor-icons': ['lucide-react'],
+        manualChunks(id) {
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'vendor-react';
+          }
+          if (id.includes('node_modules/lucide-react')) {
+            return 'vendor-icons';
+          }
+          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3')) {
+            return 'vendor-charts';
+          }
         }
       }
     }
   }
 })
+
