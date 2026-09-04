@@ -87,10 +87,13 @@ a {
 
 @media (max-width: 860px) {
   .shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
   }
   .rail {
-    display: none;
+    display: none !important;
+  }
+  main {
+    padding: 16px 12px 90px !important;
   }
 }
 

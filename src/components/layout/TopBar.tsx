@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Sparkles, Sun, Moon, Bell, ShieldCheck, Lock, LogOut, ChevronDown, UserCheck, Shield } from 'lucide-react';
+import { Search, Sparkles, Sun, Moon, Bell, ShieldCheck, Lock, LogOut, ChevronDown, UserCheck, Shield, Menu } from 'lucide-react';
 import { UserRole } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 
@@ -11,6 +11,7 @@ interface TopBarProps {
   onOpenSearch: () => void;
   onOpenAI: () => void;
   activePageTitle: string;
+  onOpenMobileMenu?: () => void;
 }
 
 export const TopBar: React.FC<TopBarProps> = ({
@@ -20,7 +21,8 @@ export const TopBar: React.FC<TopBarProps> = ({
   onToggleTheme,
   onOpenSearch,
   onOpenAI,
-  activePageTitle
+  activePageTitle,
+  onOpenMobileMenu
 }) => {
   const { user, logout, lockSession, switchRole } = useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -52,16 +54,41 @@ export const TopBar: React.FC<TopBarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between px-6 md:px-10 py-3 bg-card/95 backdrop-blur-md border-b border-line gap-4 transition-all">
+    <header className="sticky top-0 z-40 flex items-center justify-between px-3 md:px-10 py-2.5 md:py-3 bg-card/95 backdrop-blur-md border-b border-line gap-2 md:gap-4 transition-all">
+      {/* Mobile Hamburger & Brand Icon */}
+      <div className="flex items-center gap-2 md:hidden">
+        {onOpenMobileMenu && (
+          <button
+            onClick={onOpenMobileMenu}
+            className="p-1.5 rounded-md border border-line bg-card hover:bg-paper text-text transition-colors"
+            aria-label="Open mobile navigation"
+          >
+            <Menu size={18} />
+          </button>
+        )}
+        <div className="font-serif font-semibold text-sm text-text truncate max-w-[140px]">
+          {activePageTitle}
+        </div>
+      </div>
+
       {/* Search Input trigger */}
       <div 
         onClick={onOpenSearch}
-        className="flex items-center gap-2.5 px-3 py-1.5 rounded-md border border-line bg-paper/90 hover:bg-paper hover:border-slate-400 text-sub hover:text-text text-[13px] cursor-pointer w-full max-w-sm transition-all shadow-xs group"
+        className="hidden sm:flex items-center gap-2.5 px-3 py-1.5 rounded-md border border-line bg-paper/90 hover:bg-paper hover:border-slate-400 text-sub hover:text-text text-[13px] cursor-pointer w-full max-w-sm transition-all shadow-xs group"
       >
         <Search size={14} className="group-hover:text-ledger transition-colors" />
         <span className="flex-1 select-none font-normal truncate">Search risks, assets, controls, evidence...</span>
         <kbd className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-card border border-line text-sub shadow-xs">Ctrl K</kbd>
       </div>
+
+      {/* Mobile Search Icon Button */}
+      <button
+        onClick={onOpenSearch}
+        className="sm:hidden p-1.5 rounded-md border border-line bg-card text-sub hover:text-text"
+        title="Search"
+      >
+        <Search size={16} />
+      </button>
 
       {/* Right Controls */}
       <div className="flex items-center gap-3">

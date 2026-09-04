@@ -7,6 +7,8 @@ import { Sidebar } from './components/layout/Sidebar';
 import { TopBar } from './components/layout/TopBar';
 import { CommandPalette } from './components/layout/CommandPalette';
 import { AICopilotDrawer } from './components/ai/AICopilotDrawer';
+import { MobileNavDrawer } from './components/layout/MobileNavDrawer';
+import { MobileBottomNav } from './components/layout/MobileBottomNav';
 import { DocumentViewerModal } from './components/common/DocumentViewerModal';
 import { EvidenceInspectorDrawer } from './components/common/EvidenceInspectorDrawer';
 import { ToastContainer, ToastMessage } from './components/common/ToastContainer';
@@ -32,7 +34,7 @@ import { NavigationPage, UserRole } from './types';
 
 // Financial ledger loading skeleton
 const ViewLoadingSkeleton = () => (
-  <div className="p-8 space-y-6 animate-pulse select-none">
+  <div className="p-4 md:p-8 space-y-6 animate-pulse select-none">
     <div className="h-8 bg-line/60 rounded w-1/3 mb-2" />
     <div className="h-4 bg-line/40 rounded w-1/2 mb-6" />
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
@@ -61,6 +63,7 @@ function EnterpriseWorkspace() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isAIOpen, setIsAIOpen] = useState<boolean>(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   // Document Modal & Evidence Inspector State
   const [documentModalData, setDocumentModalData] = useState<{ isOpen: boolean; title: string; type: string }>({
@@ -123,17 +126,17 @@ function EnterpriseWorkspace() {
       case 'command-center': return 'Risk Command Center';
       case 'scenarios': return 'Risk Scenario Details';
       case 'assets': return 'Assets & Exposure';
-      case 'controls': return 'Controls';
+      case 'controls': return 'Controls Matrix';
       case 'optimizer': return 'Investment Optimizer';
       case 'what-if': return 'What-If Simulator';
-      case 'compliance': return 'Compliance';
-      case 'connectors': return 'Connectors';
-      case 'audit-log': return 'Audit Log';
-      case 'incidents': return 'Incidents';
+      case 'compliance': return 'Compliance & Evidence';
+      case 'connectors': return 'Telemetry Connectors';
+      case 'audit-log': return 'Immutable Audit Log';
+      case 'incidents': return 'Incidents & Resilience';
       case 'vendors': return 'Third-Party Risk';
-      case 'reports': return 'Reports';
-      case 'settings': return 'Settings';
-      default: return 'Overview';
+      case 'reports': return 'Reports & Briefings';
+      case 'settings': return 'Settings & Risk Appetite';
+      default: return 'Cyber Risk Overview';
     }
   };
 
@@ -240,16 +243,18 @@ function EnterpriseWorkspace() {
     return <LoginView onShowToast={showToast} />;
   }
 
-  const gridStyle = {
-    display: 'grid',
-    gridTemplateColumns: sidebarCollapsed ? '64px 1fr' : `${sidebarWidth}px 1fr`,
-    minHeight: '100vh',
-    transition: 'grid-template-columns 0.08s ease'
-  };
-
   return (
-    <div style={gridStyle} className="shell">
-      {/* Dark Navy Rail Sidebar with Resize & Role-Based Menus */}
+    <div 
+      className="shell min-h-screen"
+      style={{
+        display: 'grid',
+        gridTemplateColumns: sidebarCollapsed ? '64px 1fr' : `${sidebarWidth}px 1fr`,
+        minHeight: '100vh',
+        transition: 'grid-template-columns 0.08s ease',
+        '--sidebar-width': sidebarCollapsed ? '64px' : `${sidebarWidth}px`
+      } as React.CSSProperties}
+    >
+      {/* Dark Navy Rail Sidebar with Resize & Role-Based Menus (Desktop only) */}
       <Sidebar 
         activePage={activePage}
         onNavigate={(page) => setActivePage(page)}
@@ -266,7 +271,7 @@ function EnterpriseWorkspace() {
       />
 
       {/* Main Content Body */}
-      <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }} className="w-full">
         <TopBar 
           currentRole={role}
           onChangeRole={(newRole) => {
@@ -282,14 +287,43 @@ function EnterpriseWorkspace() {
           onOpenSearch={() => setIsSearchOpen(true)}
           onOpenAI={() => setIsAIOpen(true)}
           activePageTitle={getPageTitle()}
+          onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
         />
 
-        <main className="statement-main">
+        <main className="statement-main pb-24 md:pb-12 px-3 sm:px-6 md:px-12 w-full max-w-full overflow-x-hidden">
           <Suspense fallback={<ViewLoadingSkeleton />}>
             {renderActiveView()}
           </Suspense>
         </main>
       </div>
+
+      {/* Mobile Slide-over Navigation Drawer */}
+      <MobileNavDrawer
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        activePage={activePage}
+        onNavigate={(page) => setActivePage(page)}
+        currentRole={role}
+        onChangeRole={(newRole) => {
+          switchRole(newRole);
+          showToast('info', 'Role Switched', `Active workspace persona updated to ${newRole}.`);
+        }}
+        darkMode={darkMode}
+        onToggleTheme={() => {
+          const nextMode = !darkMode;
+          setDarkMode(nextMode);
+          showToast('info', 'Theme Toggled', nextMode ? 'Switched to dark theme.' : 'Switched to light theme.');
+        }}
+        onOpenAI={() => setIsAIOpen(true)}
+      />
+
+      {/* Mobile Quick Thumb Bottom Navigation Bar */}
+      <MobileBottomNav
+        activePage={activePage}
+        onNavigate={(page) => setActivePage(page)}
+        onOpenMenu={() => setIsMobileMenuOpen(true)}
+        onOpenAI={() => setIsAIOpen(true)}
+      />
 
       {/* Global Command Palette */}
       <CommandPalette 
