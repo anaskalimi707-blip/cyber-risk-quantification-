@@ -13,6 +13,7 @@ import { ToastContainer, ToastMessage } from './components/common/ToastContainer
 
 // Code-split / Lazy-loaded Views
 const ExecutiveOverview = lazy(() => import('./components/views/ExecutiveOverview').then(m => ({ default: m.ExecutiveOverview })));
+const CrimXView = lazy(() => import('./components/views/CrimXView').then(m => ({ default: m.CrimXView })));
 const RiskCommandCenter = lazy(() => import('./components/views/RiskCommandCenter').then(m => ({ default: m.RiskCommandCenter })));
 const RiskScenarioDetails = lazy(() => import('./components/views/RiskScenarioDetails').then(m => ({ default: m.RiskScenarioDetails })));
 const AssetsExposure = lazy(() => import('./components/views/AssetsExposure').then(m => ({ default: m.AssetsExposure })));
@@ -114,6 +115,7 @@ function EnterpriseWorkspace() {
   const getPageTitle = () => {
     switch (activePage) {
       case 'overview': return 'Cyber Risk Overview';
+      case 'crim-x': return 'CRIM-X Apex Engine';
       case 'command-center': return 'Risk Command Center';
       case 'scenarios': return 'Risk Scenario Details';
       case 'assets': return 'Assets & Exposure';
@@ -145,7 +147,16 @@ function EnterpriseWorkspace() {
             onInspectEvidence={(ev) => setInspectedEvidence(ev)}
           />
         );
+      case 'crim-x':
+        return (
+          <CrimXView
+            onNavigate={(page) => setActivePage(page)}
+            onShowToast={showToast}
+            onOpenDocument={openDocument}
+          />
+        );
       case 'command-center':
+
         return (
           <RiskCommandCenter 
             onNavigate={(page) => setActivePage(page)}

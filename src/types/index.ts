@@ -11,6 +11,7 @@ export type UserRole =
 
 export type NavigationPage = 
   | 'overview'
+  | 'crim-x'
   | 'command-center'
   | 'scenarios'
   | 'assets'
@@ -24,6 +25,38 @@ export type NavigationPage =
   | 'vendors'
   | 'reports'
   | 'settings';
+
+export interface CrimXCausalEffect {
+  control_id: string;
+  name: string;
+  category: string;
+  cost_inr: number;
+  implementation_days: number;
+  compliance_boost_pct: number;
+  disruption_index: number;
+  naive_correlational_risk_reduction_inr: number;
+  causal_effect_theta_inr: number;
+  causal_identification_strategy: 'natural_experiment' | 'instrumental_variable' | 'synthetic_control' | 'observational_dml';
+  causal_confidence_score: number;
+  p_value: number;
+  instrument_name?: string;
+}
+
+export interface CrimXParetoPortfolio {
+  portfolio_id: string;
+  name: string;
+  tag: 'balanced' | 'max_reduction' | 'rapid_sprint' | 'budget_minimalist' | 'custom';
+  selected_control_ids: string[];
+  selected_control_names: string[];
+  total_cost_inr: number;
+  causal_risk_reduction_inr: number;
+  net_financial_benefit_inr: number;
+  rosi_ratio: number;
+  total_implementation_days: number;
+  compliance_score_gain_pct: number;
+  avg_disruption_index: number;
+}
+
 
 export type ToleranceStatus = 'Within Tolerance' | 'Approaching Limit' | 'Above Tolerance';
 export type RiskLevel = 'Critical' | 'High' | 'Medium' | 'Low';

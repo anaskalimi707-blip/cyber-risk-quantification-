@@ -17,6 +17,7 @@ from app.api.v1.reports import router as report_router
 from app.api.v1.ai_copilot import router as ai_router
 from app.api.v1.audit import router as audit_router
 from app.api.v1.ml import router as ml_router
+from app.api.v1.crim_x import router as crim_x_router
 
 api_v1_router = APIRouter()
 
@@ -38,4 +39,6 @@ api_v1_router.include_router(report_router)
 api_v1_router.include_router(ai_router)
 api_v1_router.include_router(audit_router)
 api_v1_router.include_router(ml_router)
+api_v1_router.include_router(crim_x_router)
+
 

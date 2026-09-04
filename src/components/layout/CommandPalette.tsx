@@ -27,6 +27,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
   if (!isOpen) return null;
 
   const actions = [
+    { label: 'Open CRIM-X Apex Engine (5D Pareto & Causal DML)', icon: Shield, page: 'crim-x' as NavigationPage, category: 'Apex Engine' },
     { label: 'View Ransomware Risk Scenario (₹4.2 Cr EAL)', icon: AlertTriangle, page: 'scenarios' as NavigationPage, category: 'Top Risk Scenarios' },
     { label: 'Run PuLP Investment Optimizer (₹1 Cr Budget)', icon: TrendingUp, page: 'optimizer' as NavigationPage, category: 'Optimization' },
     { label: 'Open What-If Sandbox Simulator', icon: TrendingUp, page: 'what-if' as NavigationPage, category: 'Simulation' },
@@ -36,6 +37,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose,
     { label: 'Inspect Tamper-Evident SHA-256 Audit Log', icon: Shield, page: 'audit-log' as NavigationPage, category: 'Governance' },
     { label: 'Generate Q3 2026 Board Executive Briefing', icon: FileText, page: 'reports' as NavigationPage, category: 'Reporting' },
   ];
+
 
   const filtered = actions.filter(a => a.label.toLowerCase().includes(query.toLowerCase()) || a.category.toLowerCase().includes(query.toLowerCase()));
 

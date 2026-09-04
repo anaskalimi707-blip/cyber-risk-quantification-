@@ -43,31 +43,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
   // Role page definitions
   const roleFocusMap: Partial<Record<UserRole, { pages: NavigationPage[]; label: string; icon: any; desc: string }>> = {
     CISO: {
-      pages: ['overview', 'command-center', 'scenarios', 'optimizer', 'what-if', 'reports', 'settings'],
+      pages: ['overview', 'crim-x', 'command-center', 'scenarios', 'optimizer', 'what-if', 'reports', 'settings'],
       label: 'CISO / Board Focus',
       icon: ShieldAlert,
       desc: 'Strategic exposure & capital allocation'
     },
     CFO: {
-      pages: ['overview', 'scenarios', 'optimizer', 'vendors', 'reports', 'settings'],
+      pages: ['overview', 'crim-x', 'scenarios', 'optimizer', 'vendors', 'reports', 'settings'],
       label: 'CFO / CRO Focus',
       icon: SlidersHorizontal,
       desc: 'Loss Value-at-Risk & Investment ROI'
     },
     SecurityArchitect: {
-      pages: ['command-center', 'scenarios', 'assets', 'controls', 'what-if', 'incidents'],
+      pages: ['crim-x', 'command-center', 'scenarios', 'assets', 'controls', 'what-if', 'incidents'],
       label: 'SecOps & Architecture',
       icon: Workflow,
       desc: 'Blast radius, attack paths & telemetry'
     },
     Auditor: {
-      pages: ['compliance', 'controls', 'vendors', 'incidents', 'reports', 'settings'],
+      pages: ['crim-x', 'compliance', 'controls', 'vendors', 'incidents', 'reports', 'settings'],
       label: 'Audit & Compliance',
       icon: FileCheck2,
       desc: 'Regulatory traceability & evidence digests'
     },
     Executive: {
-      pages: ['overview', 'command-center', 'optimizer', 'reports'],
+      pages: ['overview', 'crim-x', 'command-center', 'optimizer', 'reports'],
       label: 'Executive Leadership',
       icon: ShieldAlert,
       desc: 'High-level financial summaries & capital plans'
@@ -79,7 +79,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       desc: 'Incident response & asset vulnerability telemetry'
     },
     'GRC Analyst': {
-      pages: ['compliance', 'controls', 'vendors', 'reports'],
+      pages: ['crim-x', 'compliance', 'controls', 'vendors', 'reports'],
       label: 'GRC Program',
       icon: FileCheck2,
       desc: 'Framework scoring, controls audit & vendor assessments'
@@ -91,7 +91,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       desc: 'Asset ownership, patch SLAs & control health'
     },
     'Org Admin': {
-      pages: ['overview', 'command-center', 'scenarios', 'assets', 'controls', 'optimizer', 'what-if', 'compliance', 'connectors', 'audit-log', 'incidents', 'vendors', 'reports', 'settings'],
+      pages: ['overview', 'crim-x', 'command-center', 'scenarios', 'assets', 'controls', 'optimizer', 'what-if', 'compliance', 'connectors', 'audit-log', 'incidents', 'vendors', 'reports', 'settings'],
       label: 'Enterprise Administrator',
       icon: Layers,
       desc: 'Full platform administration & configuration'
@@ -100,6 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const allNavItems: { id: NavigationPage; label: string; badge?: string; roles: UserRole[] }[] = [
     { id: 'overview', label: 'Overview', roles: ['CISO', 'CFO'] },
+    { id: 'crim-x', label: 'CRIM-X Apex Engine', badge: 'Apex AI', roles: ['CISO', 'CFO', 'SecurityArchitect', 'Auditor'] },
     { id: 'command-center', label: 'Risk Command Center', badge: 'Live', roles: ['CISO', 'SecurityArchitect'] },
     { id: 'scenarios', label: 'Risk Scenarios', roles: ['CISO', 'CFO', 'SecurityArchitect'] },
     { id: 'assets', label: 'Assets & Exposure', roles: ['SecurityArchitect'] },
