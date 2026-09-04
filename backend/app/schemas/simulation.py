@@ -1,12 +1,13 @@
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class MonteCarloSimulationRequest(BaseModel):
     scenario_id: str
     iterations: int = Field(default=10000, ge=1000, le=100000)
     random_seed: Optional[int] = 42
+    distribution_type: str = Field(default="lognormal", pattern="^(lognormal|beta_pert|weibull)$")
     
     # Overrides for what-if probabilistic distributions
     threat_event_frequency_lambda: Optional[float] = None
@@ -21,6 +22,7 @@ class MonteCarloSimulationResult(BaseModel):
     scenario_id: str
     iterations: int
     random_seed: Optional[int]
+    distribution_type: str = "lognormal"
     expected_annual_loss: float
     median_loss: float
     percentile_90_loss: float
@@ -28,11 +30,15 @@ class MonteCarloSimulationResult(BaseModel):
     value_at_risk_95: float
     expected_shortfall: float
     confidence_interval_90: Dict[str, float]
+    loss_breakdown: List[Dict[str, Any]] = []
+    regulatory_fines: List[Dict[str, Any]] = []
     histogram_bins: List[Dict[str, Any]]
     loss_exceedance_curve: List[Dict[str, Any]]
     sensitivity_rankings: List[Dict[str, Any]]
     execution_time_ms: float
     simulated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class WhatIfSimulationRequest(BaseModel):
@@ -48,6 +54,8 @@ class WhatIfComparisonResponse(BaseModel):
     scenario_name: str
     baseline: Dict[str, Any]
     projected: Dict[str, Any]
-    difference: Dict[str, Any]  # {"risk_reduction_amount": 620000, "risk_reduction_pct": 68.8, "cost_incurred": 2500000}
+    difference: Dict[str, Any]
     roi: float
     recommendation: str
+
+    model_config = ConfigDict(from_attributes=True)

@@ -20,6 +20,7 @@ class SimulationService:
         organization_id: str,
         iterations: int = 10000,
         random_seed: Optional[int] = 42,
+        distribution_type: str = "lognormal",
         tef_override: Optional[float] = None,
         vuln_override: Optional[float] = None,
         control_override: Optional[float] = None,
@@ -37,6 +38,7 @@ class SimulationService:
             control_strength=control_override or 0.64,
             loss_magnitude_median=loss_median_override or 50000000.0,
             loss_magnitude_p95=loss_p95_override or 150000000.0,
+            distribution_type=distribution_type,
             iterations=iterations,
             random_seed=random_seed
         )
@@ -47,6 +49,7 @@ class SimulationService:
             scenario_id=scenario.id,
             iterations=sim_res["iterations"],
             random_seed=sim_res["random_seed"],
+            distribution_type=sim_res.get("distribution_type", distribution_type),
             expected_annual_loss=sim_res["expected_annual_loss"],
             median_loss=sim_res["median_loss"],
             percentile_90_loss=sim_res["percentile_90_loss"],
@@ -54,6 +57,8 @@ class SimulationService:
             value_at_risk_95=sim_res["value_at_risk_95"],
             expected_shortfall=sim_res["expected_shortfall"],
             confidence_interval_90=sim_res["confidence_interval_90"],
+            loss_breakdown=sim_res.get("loss_breakdown", []),
+            regulatory_fines=sim_res.get("regulatory_fines", []),
             histogram_bins=sim_res["histogram_bins"],
             loss_exceedance_curve=sim_res["loss_exceedance_curve"],
             sensitivity_rankings=sim_res["sensitivity_rankings"],
@@ -75,9 +80,7 @@ class SimulationService:
         if not scenario:
             raise CyberOptixException(status_code=status.HTTP_404_NOT_FOUND, title="Scenario Not Found", detail=f"Scenario {scenario_id} not found.")
 
-        # Compute projected control effectiveness based on proposed improvements
         base_ctrl = 0.64
-        # Assume MFA + Backups boost control strength to 0.88
         projected_ctrl = min(0.96, base_ctrl + 0.24)
 
         base_params = {
@@ -96,7 +99,7 @@ class SimulationService:
         }
 
         diff = WhatIfEngine.simulate_difference(base_params, mod_params, iterations=10000)
-        roi = round(((diff["difference"]["risk_reduction_amount"] * 3 - 6000000.0) / 6000000.0), 2)  # 3-year horizon
+        roi = round(((diff["difference"]["risk_reduction_amount"] * 3 - 6000000.0) / 6000000.0), 2)
 
         return WhatIfComparisonResponse(
             scenario_id=scenario.id,

@@ -24,3 +24,24 @@ def test_investment_optimizer_budget_constraint():
     assert "inv_2" in selected_ids
     assert "inv_3" not in selected_ids  # ₹70L exceeds budget
     assert result["total_risk_reduction"] > 0
+
+
+def test_investment_optimizer_respects_implementation_time_constraint():
+    investments = [
+        {"id": "inv_1", "name": "FIDO2 MFA", "initial_cost": 2500000.0, "expected_risk_reduction_pct": 0.45, "base_risk_amount": 10000000.0, "implementation_time": 60},
+        {"id": "inv_2", "name": "Immutable Backups", "initial_cost": 3500000.0, "expected_risk_reduction_pct": 0.40, "base_risk_amount": 10000000.0, "implementation_time": 90},
+        {"id": "inv_3", "name": "Microsegmentation", "initial_cost": 7000000.0, "expected_risk_reduction_pct": 0.50, "base_risk_amount": 10000000.0, "implementation_time": 180},
+        {"id": "inv_4", "name": "Recovery Exercises", "initial_cost": 1000000.0, "expected_risk_reduction_pct": 0.20, "base_risk_amount": 10000000.0, "implementation_time": 30},
+    ]
+
+    result = InvestmentOptimizer.optimize_portfolio(
+        investments=investments,
+        total_budget=6000000.0,
+        max_implementation_days=75,
+    )
+
+    selected_ids = [inv["id"] for inv in result["selected_investments"]]
+    assert result["status"] == "Optimal"
+    assert "inv_2" not in selected_ids
+    assert "inv_3" not in selected_ids
+    assert result["max_implementation_time_days"] <= 75

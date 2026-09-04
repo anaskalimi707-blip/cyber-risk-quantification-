@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, CheckCircle2, ShieldCheck, FileCheck, ArrowRight } from 'lucide-react';
 
 interface ExecutiveSignOffModalProps {
@@ -20,8 +20,16 @@ export const ExecutiveSignOffModal: React.FC<ExecutiveSignOffModalProps> = ({
 }) => {
   const [approver, setApprover] = useState<string>('Chief Information Security Officer (CISO)');
   const [costCenter, setCostCenter] = useState<string>('CC-4019 (Enterprise Technology & Security Capital)');
-  const [comments, setComments] = useState<string>('Approved based on MIP knapsack optimization providing ₹2.10 Cr risk reduction with 150% ROI.');
+  const [comments, setComments] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setComments(
+        `Approved based on the constrained portfolio recommendation: ₹${(riskReduced / 10000000).toFixed(2)} Cr expected risk reduction from ₹${(totalCost / 100000).toFixed(0)} Lakh capital, with ${roiPct}% risk-reduction ROI.`
+      );
+    }
+  }, [isOpen, riskReduced, roiPct, totalCost]);
 
   if (!isOpen) return null;
 

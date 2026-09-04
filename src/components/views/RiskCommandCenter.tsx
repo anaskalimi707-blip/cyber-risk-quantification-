@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { NavigationPage } from '../../types';
 import { mockRiskScenarios } from '../../data/mockData';
-import { Download, PlayCircle, PlusCircle, ArrowUpDown } from 'lucide-react';
+import { downloadRiskLedgerCsv } from '../../utils/riskLedgerExport';
+import { Download, PlayCircle } from 'lucide-react';
 
 interface RiskCommandCenterProps {
   onNavigate: (page: NavigationPage) => void;
@@ -31,7 +32,17 @@ export const RiskCommandCenter: React.FC<RiskCommandCenterProps> = ({
   });
 
   const handleExportCSV = () => {
-    onShowToast?.('success', 'Risk Ledger Exported', 'Downloaded cyber_risk_inventory_2026.csv with 10,000 Monte Carlo distribution stats.');
+    if (filteredScenarios.length === 0) {
+      onShowToast?.('warning', 'No Scenarios to Export', 'Adjust the filters to include at least one risk scenario.');
+      return;
+    }
+
+    downloadRiskLedgerCsv(filteredScenarios, 'cyber_risk_inventory_2026.csv');
+    onShowToast?.(
+      'success',
+      'Risk Ledger Exported',
+      `Downloaded ${filteredScenarios.length} filtered scenario${filteredScenarios.length === 1 ? '' : 's'} as cyber_risk_inventory_2026.csv.`
+    );
   };
 
   const handleRunBatchSimulation = () => {
@@ -171,4 +182,3 @@ export const RiskCommandCenter: React.FC<RiskCommandCenterProps> = ({
     </div>
   );
 };
-

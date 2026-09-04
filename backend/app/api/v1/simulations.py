@@ -27,6 +27,7 @@ async def run_monte_carlo_simulation(
         organization_id=current_user.organization_id,
         iterations=req.iterations,
         random_seed=req.random_seed,
+        distribution_type=req.distribution_type,
         tef_override=req.threat_event_frequency_lambda,
         vuln_override=req.vulnerability_probability_mode,
         control_override=req.control_strength_override,

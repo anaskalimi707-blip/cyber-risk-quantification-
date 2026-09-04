@@ -116,3 +116,36 @@ async def approve_portfolio(
     )
 
     return ResponseEnvelope(data={"message": f"Portfolio {portfolio.id} has been {portfolio.status.lower()}."})
+
+
+@router.get("/pareto-frontier", response_model=ResponseEnvelope[dict])
+async def get_pareto_frontier(
+    min_budget: float = 1000000.0,
+    max_budget: float = 20000000.0,
+    steps: int = 8,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    frontier = await OptimizationService.get_pareto_frontier(
+        db=db,
+        organization_id=current_user.organization_id,
+        min_budget=min_budget,
+        max_budget=max_budget,
+        steps=steps
+    )
+    return ResponseEnvelope(data=frontier)
+
+
+@router.get("/strategy-comparison", response_model=ResponseEnvelope[list])
+async def get_strategy_comparison(
+    target_budget: float = 10000000.0,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    strategies = await OptimizationService.get_strategy_comparison(
+        db=db,
+        organization_id=current_user.organization_id,
+        target_budget=target_budget
+    )
+    return ResponseEnvelope(data=strategies)
+

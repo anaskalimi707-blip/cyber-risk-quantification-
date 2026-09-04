@@ -116,3 +116,64 @@ class OptimizationService:
         await db.commit()
         await db.refresh(portfolio)
         return portfolio
+
+    @staticmethod
+    async def get_pareto_frontier(
+        db: AsyncSession,
+        organization_id: str,
+        min_budget: float = 1000000.0,
+        max_budget: float = 20000000.0,
+        steps: int = 8,
+    ) -> Dict[str, Any]:
+        stmt = select(Investment).where(Investment.organization_id == organization_id)
+        investments = (await db.execute(stmt)).scalars().all()
+
+        inv_dicts = []
+        for inv in investments:
+            inv_dicts.append({
+                "id": inv.id,
+                "name": inv.name,
+                "initial_cost": inv.initial_cost,
+                "recurring_cost": inv.recurring_cost,
+                "implementation_time": inv.implementation_time,
+                "dependencies": inv.dependencies or [],
+                "compliance_contribution": inv.compliance_contribution,
+                "expected_risk_reduction_pct": inv.expected_risk_reduction_pct,
+                "base_risk_amount": 10000000.0,
+            })
+
+        return InvestmentOptimizer.generate_pareto_frontier(
+            investments=inv_dicts,
+            min_budget=min_budget,
+            max_budget=max_budget,
+            steps=steps
+        )
+
+    @staticmethod
+    async def get_strategy_comparison(
+        db: AsyncSession,
+        organization_id: str,
+        target_budget: float = 10000000.0,
+    ) -> List[Dict[str, Any]]:
+        stmt = select(Investment).where(Investment.organization_id == organization_id)
+        investments = (await db.execute(stmt)).scalars().all()
+
+        inv_dicts = []
+        for inv in investments:
+            inv_dicts.append({
+                "id": inv.id,
+                "name": inv.name,
+                "initial_cost": inv.initial_cost,
+                "recurring_cost": inv.recurring_cost,
+                "implementation_time": inv.implementation_time,
+                "dependencies": inv.dependencies or [],
+                "compliance_contribution": inv.compliance_contribution,
+                "expected_risk_reduction_pct": inv.expected_risk_reduction_pct,
+                "base_risk_amount": 10000000.0,
+            })
+
+        return InvestmentOptimizer.compare_portfolio_strategies(
+            investments=inv_dicts,
+            target_budget=target_budget
+        )
+
