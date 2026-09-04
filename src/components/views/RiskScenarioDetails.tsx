@@ -1,23 +1,43 @@
 import React, { useState } from 'react';
 import { NavigationPage } from '../../types';
 import { mockRiskScenarios } from '../../data/mockData';
+import { ShieldCheck, ShieldAlert, ArrowLeft, CheckCircle2, FileSignature, AlertOctagon } from 'lucide-react';
 
 interface RiskScenarioDetailsProps {
   scenarioId: string;
   onNavigate: (page: NavigationPage) => void;
   onBack: () => void;
   onInspectEvidence: (evidence: any) => void;
+  onShowToast?: (type: 'success' | 'warning' | 'info', title: string, description: string) => void;
 }
 
 export const RiskScenarioDetails: React.FC<RiskScenarioDetailsProps> = ({
   scenarioId,
   onNavigate,
   onBack,
-  onInspectEvidence
+  onInspectEvidence,
+  onShowToast
 }) => {
   const scenario = mockRiskScenarios.find(s => s.id === scenarioId) || mockRiskScenarios[0];
   const [activeTab, setActiveTab] = useState<'overview' | 'attack-path' | 'financial' | 'evidence' | 'actions'>('overview');
   const [selectedAttackNode, setSelectedAttackNode] = useState<string>('3');
+  const [decisionState, setDecisionState] = useState<'TREAT' | 'TRANSFER' | 'ACCEPT' | null>(null);
+
+  const handleTreat = () => {
+    setDecisionState('TREAT');
+    onShowToast?.('success', 'Risk Treatment Initiated', `Generated ₹70L mitigation package for "${scenario.name}". Opening Investment Optimizer.`);
+    setTimeout(() => onNavigate('optimizer'), 600);
+  };
+
+  const handleTransfer = () => {
+    setDecisionState('TRANSFER');
+    onShowToast?.('info', 'Cyber Insurance Transfer Quote', `Request for ₹15 Crore excess liability policy dispatched to underwriters for "${scenario.name}".`);
+  };
+
+  const handleAccept = () => {
+    setDecisionState('ACCEPT');
+    onShowToast?.('warning', 'Risk Exception Logged', `Formal executive risk acceptance logged in compliance audit ledger for "${scenario.name}". Expiry: 90 days.`);
+  };
 
   return (
     <div className="animate-fade-in">
@@ -28,15 +48,38 @@ export const RiskScenarioDetails: React.FC<RiskScenarioDetailsProps> = ({
           <h1>{scenario.name}</h1>
           <div className="period">Associated Business Service: <strong>{scenario.businessService}</strong></div>
         </div>
-        <div className="masthead-actions">
+        <div className="masthead-actions flex items-center gap-2">
           <button className="btn" onClick={onBack}>
-            ← Back to Command Center
+            <ArrowLeft size={13} />
+            <span>Command Center</span>
           </button>
-          <button className="btn primary" onClick={() => onNavigate('optimizer')}>
-            Optimize Defense (₹70L)
+          <button 
+            className={`btn ${decisionState === 'TREAT' ? 'primary' : ''}`}
+            onClick={handleTreat}
+            title="Treat via Control Investments"
+          >
+            <ShieldCheck size={13} />
+            <span>Treat (Optimize)</span>
+          </button>
+          <button 
+            className={`btn ${decisionState === 'TRANSFER' ? 'primary' : ''}`}
+            onClick={handleTransfer}
+            title="Transfer to Cyber Insurance"
+          >
+            <FileSignature size={13} />
+            <span>Transfer (Insurance)</span>
+          </button>
+          <button 
+            className={`btn ${decisionState === 'ACCEPT' ? 'crimson' : ''}`}
+            onClick={handleAccept}
+            title="Accept Exception"
+          >
+            <AlertOctagon size={13} />
+            <span>Accept Risk</span>
           </button>
         </div>
       </div>
+
 
       {/* Hero statement line */}
       <div className="hero">

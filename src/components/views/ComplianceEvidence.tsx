@@ -1,21 +1,46 @@
 import React from 'react';
 import { NavigationPage } from '../../types';
+import { Download, ShieldCheck, CheckCircle2, UserCheck, AlertTriangle } from 'lucide-react';
 
 interface ComplianceEvidenceProps {
   onNavigate: (page: NavigationPage) => void;
+  onShowToast?: (type: 'success' | 'warning' | 'info', title: string, description: string) => void;
+  onOpenDocument?: (title: string, type: string) => void;
 }
 
-export const ComplianceEvidence: React.FC<ComplianceEvidenceProps> = ({ onNavigate }) => {
+export const ComplianceEvidence: React.FC<ComplianceEvidenceProps> = ({ 
+  onNavigate, 
+  onShowToast,
+  onOpenDocument
+}) => {
+  const handleExportAudit = () => {
+    if (onOpenDocument) {
+      onOpenDocument("Q3 2026 Comprehensive Regulatory Compliance & Audit Ledger", "Regulatory Audit Dossier");
+    }
+    onShowToast?.('success', 'Audit Package Generated', 'Compiled SEBI CSCRF, RBI & ISO 27001 evidence binder with SHA-256 audit roots.');
+  };
+
+  const handleAssignOwner = (task: string) => {
+    onShowToast?.('success', 'Remediation Task Assigned', `Assigned "${task}" to Lead Information Security Auditor. Due date: 14 days.`);
+  };
+
+  const handleApproveException = (req: string) => {
+    onShowToast?.('warning', 'Audit Exception Granted', `30-day temporary exception recorded for ${req} with Chief Risk Officer sign-off.`);
+  };
+
   return (
     <div className="animate-fade-in">
       <div className="masthead">
         <div>
           <div className="org">Compliance &amp; Evidence</div>
-          <h1>Compliance</h1>
-          <div className="period">Framework mapping to technical controls and financial exposure</div>
+          <h1>Compliance &amp; Regulatory Traceability</h1>
+          <div className="period">Bidirectional mapping: Regulation → Technical Control → Telemetry Digest → Financial Risk</div>
         </div>
-        <div className="masthead-actions">
-          <button className="btn">Export audit package</button>
+        <div className="masthead-actions flex items-center gap-2">
+          <button className="btn primary" onClick={handleExportAudit}>
+            <Download size={13} />
+            <span>Export Audit Package</span>
+          </button>
         </div>
       </div>
 
@@ -52,8 +77,8 @@ export const ComplianceEvidence: React.FC<ComplianceEvidenceProps> = ({ onNaviga
             <div className="title">Critical-service recovery testing</div>
             <div className="meta">Requirement 7.2 · SEBI CSCRF</div>
             <div className="actions">
-              <a className="link-btn" onClick={() => onNavigate('controls')}>Request evidence →</a>
-              <a className="link-btn">Assign owner →</a>
+              <button className="link-btn font-medium" onClick={() => onNavigate('controls')}>Request evidence →</button>
+              <button className="link-btn font-medium" onClick={() => handleAssignOwner('Critical-service recovery testing')}>Assign owner →</button>
             </div>
           </div>
         </div>
@@ -64,7 +89,7 @@ export const ComplianceEvidence: React.FC<ComplianceEvidenceProps> = ({ onNaviga
             <div className="title">Privileged-access review frequency</div>
             <div className="meta">Requirement 4.1 · ISO/IEC 27001</div>
             <div className="actions">
-              <a className="link-btn">Approve exception →</a>
+              <button className="link-btn font-medium" onClick={() => handleApproveException('ISO 27001 Req 4.1')}>Approve exception →</button>
             </div>
           </div>
         </div>
@@ -75,7 +100,8 @@ export const ComplianceEvidence: React.FC<ComplianceEvidenceProps> = ({ onNaviga
             <div className="title">Third-party incident reporting evidence</div>
             <div className="meta">Requirement 9.4 · SEBI CSCRF</div>
             <div className="actions">
-              <a className="link-btn" onClick={() => onNavigate('vendors')}>Review vendor →</a>
+              <button className="link-btn font-medium" onClick={() => onNavigate('vendors')}>Review vendor →</button>
+              <button className="link-btn font-medium" onClick={() => handleAssignOwner('Third-party incident reporting')}>Assign owner →</button>
             </div>
           </div>
         </div>
@@ -86,7 +112,7 @@ export const ComplianceEvidence: React.FC<ComplianceEvidenceProps> = ({ onNaviga
             <div className="title">Continuous monitoring coverage</div>
             <div className="meta">Requirement 3.3 · NIST CSF 2.0</div>
             <div className="actions">
-              <a className="link-btn">View history →</a>
+              <button className="link-btn font-medium" onClick={() => onShowToast?.('info', 'Audit Log History', 'Retrieved 180-day SIEM & EDR telemetry log timestamps.')}>View history →</button>
             </div>
           </div>
         </div>
@@ -98,3 +124,4 @@ export const ComplianceEvidence: React.FC<ComplianceEvidenceProps> = ({ onNaviga
     </div>
   );
 };
+

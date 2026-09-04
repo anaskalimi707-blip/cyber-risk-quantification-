@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { NavigationPage } from '../../types';
+import { RotateCcw, BookmarkPlus, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 interface WhatIfSimulatorProps {
   onNavigate: (page: NavigationPage) => void;
+  onShowToast?: (type: 'success' | 'warning' | 'info', title: string, description: string) => void;
 }
 
-export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({ onNavigate }) => {
+export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({ onNavigate, onShowToast }) => {
   const [mfa, setMfa] = useState(88);
   const [edr, setEdr] = useState(72);
   const [rto, setRto] = useState(18);
@@ -18,6 +20,26 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({ onNavigate }) 
   const reduction = (mfa * 0.008) + (edr * 0.006) + (immutability ? 0.6 : 0) + (segmentation ? 0.5 : 0) - (vendorFailure ? 0.8 : 0);
   const simulated = Math.max(0.8, baseline - reduction);
 
+  const handleReset = () => {
+    setMfa(88);
+    setEdr(72);
+    setRto(18);
+    setImmutability(true);
+    setSegmentation(false);
+    setVendorFailure(false);
+    onShowToast?.('info', 'Sandbox Reset', 'Reset all simulation sliders to enterprise telemetry baseline.');
+  };
+
+  const handleSaveSnapshot = () => {
+    const snapId = `SNAP-${Date.now().toString().slice(-4)}`;
+    onShowToast?.('success', 'Simulation Snapshot Saved', `Saved snapshot #${snapId} (Simulated Loss: ₹${simulated.toFixed(1)} Cr).`);
+  };
+
+  const handleApplyToPlan = () => {
+    onShowToast?.('success', 'Simulation Applied to Budget Optimizer', `MIP solver updated with target controls: MFA ${mfa}%, EDR ${edr}%, Immutability: ${immutability ? 'ON' : 'OFF'}.`);
+    setTimeout(() => onNavigate('optimizer'), 500);
+  };
+
   return (
     <div className="animate-fade-in">
       <div className="masthead">
@@ -25,6 +47,20 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({ onNavigate }) 
           <div className="org">What-If Simulator</div>
           <h1>Test decisions before spending money</h1>
           <div className="period">Counterfactual security posture sandbox</div>
+        </div>
+        <div className="masthead-actions flex items-center gap-2">
+          <button className="btn" onClick={handleReset}>
+            <RotateCcw size={13} />
+            <span>Reset Baseline</span>
+          </button>
+          <button className="btn" onClick={handleSaveSnapshot}>
+            <BookmarkPlus size={13} />
+            <span>Save Snapshot</span>
+          </button>
+          <button className="btn primary" onClick={handleApplyToPlan}>
+            <span>Apply to Plan</span>
+            <ArrowRight size={13} />
+          </button>
         </div>
       </div>
 
@@ -79,9 +115,9 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({ onNavigate }) 
           </div>
 
           <button 
-            className="btn primary" 
+            className="btn primary w-full justify-center" 
             style={{ marginTop: '18px' }}
-            onClick={() => onNavigate('optimizer')}
+            onClick={handleApplyToPlan}
           >
             Apply to Investment Plan →
           </button>
@@ -123,3 +159,4 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({ onNavigate }) 
     </div>
   );
 };
+

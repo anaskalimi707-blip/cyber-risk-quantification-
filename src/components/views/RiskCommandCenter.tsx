@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 import { NavigationPage } from '../../types';
 import { mockRiskScenarios } from '../../data/mockData';
+import { Download, PlayCircle, PlusCircle, ArrowUpDown } from 'lucide-react';
 
 interface RiskCommandCenterProps {
   onNavigate: (page: NavigationPage) => void;
   onSelectScenario: (scenarioId: string) => void;
+  onShowToast?: (type: 'success' | 'warning' | 'info', title: string, description: string) => void;
 }
 
 export const RiskCommandCenter: React.FC<RiskCommandCenterProps> = ({
   onNavigate,
-  onSelectScenario
+  onSelectScenario,
+  onShowToast
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [sortField, setSortField] = useState<'loss' | 'prob' | 'name'>('loss');
+  const [isRunningBatch, setIsRunningBatch] = useState(false);
 
   const filteredScenarios = mockRiskScenarios.filter(scen => {
     const matchSearch = scen.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -26,6 +30,19 @@ export const RiskCommandCenter: React.FC<RiskCommandCenterProps> = ({
     return a.name.localeCompare(b.name);
   });
 
+  const handleExportCSV = () => {
+    onShowToast?.('success', 'Risk Ledger Exported', 'Downloaded cyber_risk_inventory_2026.csv with 10,000 Monte Carlo distribution stats.');
+  };
+
+  const handleRunBatchSimulation = () => {
+    setIsRunningBatch(true);
+    onShowToast?.('info', 'Batch Monte Carlo Triggered', 'Running 10,000 iterations per scenario across active threat models...');
+    setTimeout(() => {
+      setIsRunningBatch(false);
+      onShowToast?.('success', 'Simulations Completed', 'FAIR loss distributions updated with latest telemetry weights.');
+    }, 1500);
+  };
+
   return (
     <div className="animate-fade-in">
       {/* Masthead */}
@@ -35,12 +52,28 @@ export const RiskCommandCenter: React.FC<RiskCommandCenterProps> = ({
           <h1>Risk Command Center</h1>
           <div className="period">Continuous probabilistic cyber-risk quantification ledger</div>
         </div>
-        <div className="masthead-actions">
+        <div className="masthead-actions flex items-center gap-2">
+          <button 
+            className="btn"
+            onClick={handleExportCSV}
+            title="Export CSV"
+          >
+            <Download size={13} />
+            <span>Export CSV</span>
+          </button>
+          <button 
+            className="btn"
+            onClick={handleRunBatchSimulation}
+            disabled={isRunningBatch}
+          >
+            <PlayCircle size={13} className={isRunningBatch ? 'animate-spin text-teal' : ''} />
+            <span>{isRunningBatch ? 'Simulating...' : 'Run Monte Carlo'}</span>
+          </button>
           <button 
             className="btn primary"
             onClick={() => onNavigate('optimizer')}
           >
-            Open Investment Optimizer
+            <span>Open Optimizer</span>
           </button>
         </div>
       </div>
@@ -55,7 +88,7 @@ export const RiskCommandCenter: React.FC<RiskCommandCenterProps> = ({
           onChange={(e) => setSearchTerm(e.target.value)}
         />
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-          <option value="ALL">All Statuses (3)</option>
+          <option value="ALL">All Statuses ({mockRiskScenarios.length})</option>
           <option value="Above Tolerance">Above Tolerance</option>
           <option value="Within Tolerance">Within Tolerance</option>
           <option value="Under Review">Under Review</option>
@@ -68,8 +101,16 @@ export const RiskCommandCenter: React.FC<RiskCommandCenterProps> = ({
       </div>
 
       {/* Callout Info */}
-      <div className="callout amber">
-        <strong>Executive Risk Assessment:</strong> Total aggregate Value-at-Risk across all active scenarios is estimated at <strong>₹18.4 Crore</strong>. 2 of 3 scenarios currently exceed board risk appetite.
+      <div className="callout amber flex items-center justify-between">
+        <div>
+          <strong>Executive Risk Assessment:</strong> Total aggregate Value-at-Risk across all active scenarios is estimated at <strong>₹18.4 Crore</strong>. 2 of 3 scenarios currently exceed board risk appetite.
+        </div>
+        <button 
+          className="link-btn shrink-0 ml-4 font-semibold"
+          onClick={() => onNavigate('settings')}
+        >
+          Adjust Board Appetite Limits →
+        </button>
       </div>
 
       {/* Scenarios Table */}
@@ -130,3 +171,4 @@ export const RiskCommandCenter: React.FC<RiskCommandCenterProps> = ({
     </div>
   );
 };
+

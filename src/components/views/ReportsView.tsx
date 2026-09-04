@@ -1,25 +1,40 @@
 import React from 'react';
 import { NavigationPage } from '../../types';
+import { Plus, Calendar, Download, FileText, CheckCircle2 } from 'lucide-react';
 
 interface ReportsViewProps {
   onNavigate: (page: NavigationPage) => void;
   onOpenDocument: (title: string, type: string) => void;
+  onShowToast?: (type: 'success' | 'warning' | 'info', title: string, description: string) => void;
 }
 
-export const ReportsView: React.FC<ReportsViewProps> = ({ onNavigate, onOpenDocument }) => {
+export const ReportsView: React.FC<ReportsViewProps> = ({ onNavigate, onOpenDocument, onShowToast }) => {
+  const handleScheduleDispatch = () => {
+    onShowToast?.('success', 'Automated Dispatch Configured', 'Recurring weekly executive risk briefing scheduled for every Monday at 08:00 AM IST to Board Members.');
+  };
+
   return (
     <div className="animate-fade-in">
       <div className="masthead">
         <div>
-          <div className="org">Reports</div>
-          <h1>Reports</h1>
+          <div className="org">Reports &amp; Dossiers</div>
+          <h1>Executive Reports &amp; Board Briefings</h1>
+          <div className="period">Cryptographically sealed financial risk statements ready for board meetings</div>
         </div>
-        <div className="masthead-actions">
+        <div className="masthead-actions flex items-center gap-2">
+          <button className="btn" onClick={handleScheduleDispatch}>
+            <Calendar size={13} />
+            <span>Schedule Dispatch</span>
+          </button>
           <button 
             className="btn primary"
-            onClick={() => onOpenDocument("Custom Q3 2026 Enterprise Risk Briefing", "Executive Report")}
+            onClick={() => {
+              onOpenDocument("Custom Q3 2026 Enterprise Risk Briefing", "Executive Report");
+              onShowToast?.('info', 'Report Generator', 'Compiled custom executive dossier with latest FAIR distributions.');
+            }}
           >
-            New report
+            <Plus size={13} />
+            <span>Generate New Report</span>
           </button>
         </div>
       </div>
@@ -27,7 +42,7 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ onNavigate, onOpenDocu
       <table className="ledger-table">
         <thead>
           <tr>
-            <th>Report</th>
+            <th>Report Dossier</th>
             <th>Scope</th>
             <th>Generated</th>
             <th>Format</th>
@@ -36,73 +51,73 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ onNavigate, onOpenDocu
         </thead>
         <tbody>
           <tr>
-            <td><strong>Executive cyber-risk report</strong></td>
+            <td><strong>Executive cyber-risk statement</strong></td>
             <td>Organization-wide</td>
             <td style={{ color: 'var(--sub)' }}>Today, 07:40</td>
-            <td>PDF</td>
+            <td><span className="badge good">PDF (Signed)</span></td>
             <td style={{ textAlign: 'right' }}>
-              <a 
-                className="link-btn" 
+              <button 
+                className="link-btn font-medium" 
                 onClick={() => onOpenDocument("Executive Cyber-Risk Report", "Executive Board Briefing")}
               >
-                Download →
-              </a>
+                Preview &amp; Download →
+              </button>
             </td>
           </tr>
           <tr>
-            <td><strong>CISO operational report</strong></td>
+            <td><strong>CISO operational posture dossier</strong></td>
             <td>Organization-wide</td>
             <td style={{ color: 'var(--sub)' }}>Yesterday</td>
-            <td>PDF</td>
+            <td><span className="badge good">PDF (Signed)</span></td>
             <td style={{ textAlign: 'right' }}>
-              <a 
-                className="link-btn" 
+              <button 
+                className="link-btn font-medium" 
                 onClick={() => onOpenDocument("CISO Operational Posture Report", "Operational Report")}
               >
-                Download →
-              </a>
+                Preview &amp; Download →
+              </button>
             </td>
           </tr>
           <tr>
-            <td><strong>Investment recommendation report</strong></td>
+            <td><strong>Investment optimization business case</strong></td>
             <td>Ransomware — Payment Processing</td>
             <td style={{ color: 'var(--sub)' }}>3 days ago</td>
-            <td>PDF, CSV</td>
+            <td><span className="badge neutral">PDF, CSV</span></td>
             <td style={{ textAlign: 'right' }}>
-              <a 
-                className="link-btn" 
+              <button 
+                className="link-btn font-medium" 
                 onClick={() => onOpenDocument("Q3 2026 Investment Recommendation Report", "Investment Plan")}
               >
-                Download →
-              </a>
+                Preview &amp; Download →
+              </button>
             </td>
           </tr>
           <tr>
-            <td><strong>Compliance evidence package</strong></td>
-            <td>SEBI CSCRF</td>
+            <td><strong>Regulatory compliance evidence package</strong></td>
+            <td>SEBI CSCRF / RBI</td>
             <td style={{ color: 'var(--sub)' }}>5 days ago</td>
-            <td>ZIP</td>
+            <td><span className="badge neutral">ZIP (Hashes)</span></td>
             <td style={{ textAlign: 'right' }}>
-              <a 
-                className="link-btn" 
+              <button 
+                className="link-btn font-medium" 
                 onClick={() => onOpenDocument("SEBI CSCRF Compliance Evidence Package", "Audit Package")}
               >
-                Download →
-              </a>
+                Preview &amp; Download →
+              </button>
             </td>
           </tr>
           <tr>
-            <td><strong>Vendor-risk report</strong></td>
+            <td><strong>Vendor concentration risk assessment</strong></td>
             <td>CloudPay Processing Ltd.</td>
             <td style={{ color: 'var(--sub)' }}>9 days ago</td>
-            <td>PDF</td>
+            <td><span className="badge warn">PDF (Overdue)</span></td>
             <td style={{ textAlign: 'right' }}>
-              <a 
-                className="link-btn" 
+              <button 
+                className="link-btn font-medium" 
                 onClick={() => onOpenDocument("Vendor Risk Report: CloudPay Processing Ltd.", "Vendor Report")}
               >
-                Download →
-              </a>
+                Preview &amp; Download →
+              </button>
             </td>
           </tr>
         </tbody>
@@ -114,3 +129,4 @@ export const ReportsView: React.FC<ReportsViewProps> = ({ onNavigate, onOpenDocu
     </div>
   );
 };
+

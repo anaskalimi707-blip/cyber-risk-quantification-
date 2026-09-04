@@ -1,11 +1,12 @@
 export type UserRole = 
-  | 'Executive'
-  | 'CFO'
   | 'CISO'
+  | 'CFO'
+  | 'SecurityArchitect'
+  | 'Auditor'
+  | 'Executive'
   | 'SOC Analyst'
   | 'GRC Analyst'
   | 'IT Owner'
-  | 'Auditor'
   | 'Org Admin';
 
 export type NavigationPage = 

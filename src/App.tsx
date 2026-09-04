@@ -27,6 +27,7 @@ export function App() {
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('scen-ransomware-payment');
   const [currentRole, setCurrentRole] = useState<UserRole>('CISO');
   const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [sidebarWidth, setSidebarWidth] = useState<number>(240);
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isAIOpen, setIsAIOpen] = useState<boolean>(false);
@@ -174,12 +175,26 @@ export function App() {
     }
   };
 
+  const gridStyle = {
+    display: 'grid',
+    gridTemplateColumns: sidebarCollapsed ? '64px 1fr' : `${sidebarWidth}px 1fr`,
+    minHeight: '100vh',
+    transition: 'grid-template-columns 0.08s ease'
+  };
+
   return (
-    <div className="shell">
-      {/* Dark Navy Rail Sidebar */}
+    <div style={gridStyle} className="shell">
+      {/* Dark Navy Rail Sidebar with Resize & Role-Based Menus */}
       <Sidebar 
         activePage={activePage}
         onNavigate={(page) => setActivePage(page)}
+        currentRole={currentRole}
+        onChangeRole={(role) => {
+          setCurrentRole(role);
+          showToast('info', 'Role Switched', `Active workspace persona updated to ${role}.`);
+        }}
+        width={sidebarWidth}
+        onResize={(newWidth) => setSidebarWidth(newWidth)}
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         onOpenAI={() => setIsAIOpen(true)}
@@ -189,9 +204,15 @@ export function App() {
       <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <TopBar 
           currentRole={currentRole}
-          onChangeRole={(role) => setCurrentRole(role)}
+          onChangeRole={(role) => {
+            setCurrentRole(role);
+            showToast('info', 'Role Switched', `Active workspace persona updated to ${role}.`);
+          }}
           darkMode={darkMode}
-          onToggleTheme={() => setDarkMode(!darkMode)}
+          onToggleTheme={() => {
+            setDarkMode(!darkMode);
+            showToast('info', 'Theme Toggled', darkMode ? 'Switched to editorial light ledger theme.' : 'Switched to dark theme.');
+          }}
           onOpenSearch={() => setIsSearchOpen(true)}
           onOpenAI={() => setIsAIOpen(true)}
           activePageTitle={getPageTitle()}
@@ -240,3 +261,4 @@ export function App() {
 }
 
 export default App;
+
