@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  # FastAPI Enterprise Risk Engine
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cyberoptix-backend
+    restart: unless-stopped
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=False
+      - PROJECT_NAME=CyberOptix Enterprise
+      - SECRET_KEY=${SECRET_KEY:-cyberoptix-prod-secret-key-change-in-environment-2026}
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-cyberoptix}:${POSTGRES_PASSWORD:-cyberoptix_secure_pass}@postgres:5432/${POSTGRES_DB:-cyberoptix_db}
+      - BACKEND_CORS_ORIGINS=["http://localhost", "http://localhost:80", "https://cyberoptix.enterprise.internal"]
+      - EVIDENCE_STORAGE_PATH=/app/storage/evidence
+      - REPORT_STORAGE_PATH=/app/storage/reports
+      - DEFAULT_MONTE_CARLO_ITERATIONS=10000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - backend_storage:/app/storage
+    networks:
+      - cyberoptix-network
+
+  # Production Frontend Nginx SPA & Reverse Proxy
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cyberoptix-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    networks:
+      - cyberoptix-network
+
+  # High-Performance PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: cyberoptix-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cyberoptix}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cyberoptix_secure_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-cyberoptix_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cyberoptix} -d ${POSTGRES_DB:-cyberoptix_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cyberoptix-network
+
+  # Redis Cache & Background Queue
+  redis:
+    image: redis:7-alpine
+    container_name: cyberoptix-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-cyberoptix_redis_pass}
+    volumes:
+      - redis_data:/data
+    networks:
+      - cyberoptix-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  backend_storage:
+
+networks:
+  cyberoptix-network:
+    driver: bridge

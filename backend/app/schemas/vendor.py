@@ -1,10 +1,10 @@
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class VendorCreate(BaseModel):
-    name: str = Field(..., example="CloudShield Managed SOC")
+    name: str = Field(..., json_schema_extra={"example": "CloudShield Managed SOC"})
     vendor_type: str = Field(default="Cloud / SaaS Provider")
     criticality: str = Field(default="High")
     inherent_risk: str = Field(default="High")
@@ -30,8 +30,7 @@ class VendorResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class VendorRiskResponse(BaseModel):
