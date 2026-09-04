@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { NavigationPage } from '../../types';
 import { mockRiskScenarios } from '../../data/mockData';
-import { ShieldCheck, ShieldAlert, ArrowLeft, CheckCircle2, FileSignature, AlertOctagon, Layers, Sliders, Scale } from 'lucide-react';
+import { useRiskDecision } from '../../context/RiskDecisionContext';
+import { intelligenceService } from '../../services/intelligenceService';
+import { ShieldCheck, ShieldAlert, ArrowLeft, CheckCircle2, FileSignature, AlertOctagon, Layers, Sliders, Scale, Check, ExternalLink, Hash } from 'lucide-react';
 import { InsuranceQuoteModal } from '../modals/InsuranceQuoteModal';
 import { RiskAcceptanceModal } from '../modals/RiskAcceptanceModal';
 import { AttackStepDetailsModal } from '../modals/AttackStepDetailsModal';
@@ -21,7 +23,10 @@ export const RiskScenarioDetails: React.FC<RiskScenarioDetailsProps> = ({
   onInspectEvidence,
   onShowToast
 }) => {
-  const scenario = mockRiskScenarios.find(s => s.id === scenarioId) || mockRiskScenarios[0];
+  const { scenarios, treatments, executeDecision } = useRiskDecision();
+  const scenario = scenarios.find(s => s.id === scenarioId) || mockRiskScenarios.find(s => s.id === scenarioId) || mockRiskScenarios[0];
+  const treatment = treatments[scenario.id];
+
   const [activeTab, setActiveTab] = useState<'overview' | 'attack-path' | 'financial' | 'decomposition' | 'evidence' | 'actions'>('overview');
   const [selectedAttackNode, setSelectedAttackNode] = useState<string>('3');
   const [decisionState, setDecisionState] = useState<'TREAT' | 'TRANSFER' | 'ACCEPT' | null>(null);
@@ -52,18 +57,48 @@ export const RiskScenarioDetails: React.FC<RiskScenarioDetailsProps> = ({
   ];
 
   const handleTreat = () => {
+    const rec = executeDecision({
+      scenarioId: scenario.id,
+      action: 'TREAT',
+      actor: 'Sarah Chen',
+      role: 'CISO',
+      rationale: 'Approved multi-layer control deployment (FIDO2 Hardware Keys + Immutable Backups) to break initial access and lateral encryption paths.',
+      selectedControlId: 'ctrl-mfa',
+      selectedControlName: 'Privileged FIDO2 Hardware Keys & Immutable Backup Vault'
+    });
     setDecisionState('TREAT');
-    onShowToast?.('success', 'Risk Treatment Initiated', `Generated mitigation package for "${scenario.name}". Opening Investment Optimizer.`);
-    setTimeout(() => onNavigate('optimizer'), 600);
+    onShowToast?.('success', 'Risk Treatment Executed & Logged', `Net financial loss reduced to ${rec.residualEalFormatted}. Immutable audit log record created.`);
   };
 
   const handleTransfer = () => {
+    executeDecision({
+      scenarioId: scenario.id,
+      action: 'TRANSFER',
+      actor: 'David Miller',
+      role: 'CFO',
+      rationale: 'Underwritten by ICICI Lombard / Munich Re Cyber Consortium for ₹15.0 Crore aggregate breach limit.',
+      insurancePolicyRef: 'POL-CYB-2026-9921',
+    });
+    setDecisionState('TRANSFER');
     setIsInsuranceModalOpen(true);
+    onShowToast?.('success', 'Risk Transfer Executed & Logged', `Underwritten via policy POL-CYB-2026-9921. Audit entry created.`);
   };
 
   const handleAccept = () => {
+    executeDecision({
+      scenarioId: scenario.id,
+      action: 'ACCEPT',
+      actor: 'Sarah Chen',
+      role: 'CISO',
+      rationale: 'Executive acceptance approved for 90-day operational cycle pending planned core cloud infrastructure migration.',
+      acceptanceExpiryDate: '2026-12-31'
+    });
+    setDecisionState('ACCEPT');
     setIsAcceptanceModalOpen(true);
+    onShowToast?.('warning', 'Risk Formally Accepted & Logged', `Accepted under executive rationale until 2026-12-31. Audit record sealed.`);
   };
+
+  const mitreSteps = intelligenceService.getMitreAttackSteps();
 
   return (
     <div className="animate-fade-in">
@@ -80,7 +115,7 @@ export const RiskScenarioDetails: React.FC<RiskScenarioDetailsProps> = ({
             <span>Command Center</span>
           </button>
           <button 
-            className={`btn ${decisionState === 'TREAT' ? 'primary' : ''}`}
+            className={`btn ${(decisionState === 'TREAT' || treatment?.action === 'TREAT') ? 'primary' : ''}`}
             onClick={handleTreat}
             title="Treat via Control Investments"
           >
@@ -88,7 +123,7 @@ export const RiskScenarioDetails: React.FC<RiskScenarioDetailsProps> = ({
             <span>Treat (Optimize)</span>
           </button>
           <button 
-            className={`btn ${decisionState === 'TRANSFER' ? 'primary' : ''}`}
+            className={`btn ${(decisionState === 'TRANSFER' || treatment?.action === 'TRANSFER') ? 'primary' : ''}`}
             onClick={handleTransfer}
             title="Transfer to Cyber Insurance"
           >
@@ -96,7 +131,7 @@ export const RiskScenarioDetails: React.FC<RiskScenarioDetailsProps> = ({
             <span>Transfer (Insurance)</span>
           </button>
           <button 
-            className={`btn ${decisionState === 'ACCEPT' ? 'crimson' : ''}`}
+            className={`btn ${(decisionState === 'ACCEPT' || treatment?.action === 'ACCEPT') ? 'crimson' : ''}`}
             onClick={handleAccept}
             title="Accept Exception"
           >
@@ -105,6 +140,33 @@ export const RiskScenarioDetails: React.FC<RiskScenarioDetailsProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Auditable Decision Record Banner */}
+      {treatment && (
+        <div className="card p-4 border-teal/40 bg-teal/5 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 my-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-teal/15 text-teal flex items-center justify-center shrink-0">
+              <Check size={18} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="badge good text-[11px] font-mono font-bold">DECISION EXECUTED: {treatment.action}</span>
+                <span className="text-xs text-sub">By <strong>{treatment.actor}</strong> ({treatment.role}) · {treatment.timestamp}</span>
+              </div>
+              <div className="text-xs text-text font-medium mt-1">
+                {treatment.action === 'TREAT' && `Treated via ${treatment.selectedControlName}. Residual risk reduced to ${treatment.residualEalFormatted}.`}
+                {treatment.action === 'TRANSFER' && `Transferred via Cyber Policy ${treatment.insurancePolicyRef}. Net corporate loss capped.`}
+                {treatment.action === 'ACCEPT' && `Formally accepted risk exception under CISO authority (Expires: ${treatment.acceptanceExpiryDate}).`}
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 font-mono text-[11px] text-sub bg-card px-3 py-1.5 rounded border border-line">
+            <Hash size={12} className="text-teal" />
+            <span className="truncate max-w-[160px]" title={treatment.decisionHash}>{treatment.decisionHash}</span>
+            <span className="badge good text-[9px]">Verified</span>
+          </div>
+        </div>
+      )}
 
       {/* Hero statement line */}
       <div className="hero">
@@ -199,39 +261,105 @@ export const RiskScenarioDetails: React.FC<RiskScenarioDetailsProps> = ({
 
       {/* TAB CONTENT: ATTACK PATH */}
       {activeTab === 'attack-path' && (
-        <div>
-          <h2 className="section">Adversary Attack Path Progression</h2>
-          <div className="section-sub">Click any node along the kill chain to see technical chokepoint details.</div>
+        <div className="space-y-6">
+          <div>
+            <h2 className="section">MITRE ATT&CK Adversary Kill-Chain Progression</h2>
+            <div className="section-sub">Interactive adversary traversal sequence mapping technical exploitation chokepoints to enterprise financial loss.</div>
+          </div>
 
-          <div className="path">
-            {scenario.attackPathNodes.map((node, idx) => {
-              const isWeak = node.id === '3' || node.id === '5';
-              const isSelected = selectedAttackNode === node.id;
+          <div className="path" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '12px' }}>
+            {mitreSteps.map((node, idx) => {
+              const isSelected = selectedAttackNode === String(node.stepNumber);
+              const isChokepoint = node.stepNumber === 3 || node.stepNumber === 5;
               return (
                 <React.Fragment key={node.id}>
                   <div 
-                    className={`path-node ${isWeak ? 'weak' : ''}`}
-                    onClick={() => setSelectedAttackNode(node.id)}
+                    className={`path-node ${isChokepoint ? 'weak' : ''}`}
+                    onClick={() => setSelectedAttackNode(String(node.stepNumber))}
                     style={{
                       borderWidth: isSelected ? '2px' : '1px',
-                      borderColor: isSelected ? 'var(--ink)' : undefined
+                      borderColor: isSelected ? 'var(--ink)' : undefined,
+                      minWidth: '150px',
+                      cursor: 'pointer'
                     }}
                   >
-                    <strong>Step {node.id}:</strong> {node.name.split('/')[0]}
-                    <div style={{ fontSize: '11px', color: 'var(--sub)', marginTop: '2px' }}>{node.status}</div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                      <strong>Step {node.stepNumber}</strong>
+                      <span className="badge neutral font-mono text-[9px]">{node.techniqueId}</span>
+                    </div>
+                    <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text)', whiteSpace: 'normal' }}>
+                      {node.techniqueName}
+                    </div>
+                    <div style={{ fontSize: '10px', color: isChokepoint ? 'var(--crimson)' : 'var(--sub)', marginTop: '4px' }}>
+                      {node.status}
+                    </div>
                   </div>
-                  {idx < scenario.attackPathNodes.length - 1 && <span className="path-arrow">→</span>}
+                  {idx < mitreSteps.length - 1 && <span className="path-arrow" style={{ alignSelf: 'center' }}>→</span>}
                 </React.Fragment>
               );
             })}
           </div>
 
-          <div className="callout teal" style={{ marginTop: '22px' }}>
-            <strong>Selected Node Chokepoint:</strong> {scenario.attackPathNodes.find(n => n.id === selectedAttackNode)?.name}
-            <div style={{ marginTop: '4px', fontSize: '12.5px' }}>
-              Enforcing FIDO2 Hardware MFA on payment gateway administrators breaks this attack chain and reduces expected yearly loss by <strong>₹1.4 Crore</strong>.
-            </div>
-          </div>
+          {/* Selected Chokepoint Inspector Card */}
+          {(() => {
+            const activeStep = mitreSteps.find(s => String(s.stepNumber) === selectedAttackNode) || mitreSteps[2];
+            return (
+              <div className="card p-5 border-teal/40 bg-card space-y-4">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 pb-3 border-b border-line">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="badge teal font-mono text-xs">{activeStep.techniqueId}</span>
+                      <span className="badge crit text-xs">{activeStep.tactic}</span>
+                      <span className="badge neutral text-xs font-mono">{activeStep.status}</span>
+                    </div>
+                    <h3 className="font-serif text-lg text-ink font-medium m-0 mt-1">{activeStep.techniqueName}</h3>
+                  </div>
+
+                  <a
+                    href={activeStep.mitreUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="link-btn text-xs flex items-center gap-1"
+                  >
+                    <span>MITRE ATT&CK Docs</span>
+                    <ExternalLink size={12} />
+                  </a>
+                </div>
+
+                <div className="text-xs text-sub leading-relaxed">
+                  {activeStep.description}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-1">
+                  <div className="p-3 bg-paper rounded border border-line">
+                    <div className="text-sub font-semibold text-[10px] uppercase">Affected Enterprise Asset</div>
+                    <div className="text-ink font-medium mt-1">{activeStep.affectedAsset}</div>
+                  </div>
+
+                  <div className="p-3 bg-paper rounded border border-line">
+                    <div className="text-sub font-semibold text-[10px] uppercase">Control Vulnerability</div>
+                    <div className="text-crimson font-medium mt-1">{activeStep.controlWeakness || 'Perimeter access weakness'}</div>
+                  </div>
+
+                  <div className="p-3 bg-teal/5 rounded border border-teal/30">
+                    <div className="text-teal font-semibold text-[10px] uppercase">Defensive Chokepoint & Loss Reduction</div>
+                    <div className="text-teal font-bold mt-1">{activeStep.chokepointControl}</div>
+                    <div className="text-teal text-[11px] font-mono mt-0.5">Saves {activeStep.ealReductionFormatted} EAL / yr</div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 pt-2">
+                  <button
+                    className="btn primary text-xs"
+                    onClick={handleTreat}
+                  >
+                    <ShieldCheck size={13} />
+                    <span>Deploy {activeStep.chokepointControl} (Treat)</span>
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       )}
 
@@ -316,25 +444,44 @@ export const RiskScenarioDetails: React.FC<RiskScenarioDetailsProps> = ({
       {/* TAB CONTENT: FINANCIAL (MONTE CARLO & SENSITIVITY) */}
       {activeTab === 'financial' && (
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
             <div>
               <h2 className="section">Probabilistic Monte Carlo Quantification</h2>
-              <div className="section-sub">10,000 to 50,000 trial sampling under parametric risk distributions.</div>
+              <div className="section-sub">{iterations.toLocaleString()} trial sampling under {distributionType === 'beta_pert' ? 'Beta-PERT' : distributionType === 'lognormal' ? 'Log-Normal' : 'Weibull'} distribution.</div>
             </div>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', color: 'var(--sub)' }}>Distribution:</span>
-              <select
-                value={distributionType}
-                onChange={(e) => {
-                  setDistributionType(e.target.value as any);
-                  onShowToast?.('info', 'Distribution Model Updated', `Monte Carlo recalculated using ${e.target.value.toUpperCase()} loss density.`);
-                }}
-                style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--line)', fontSize: '12px' }}
-              >
-                <option value="lognormal">Log-Normal (FAIR Standard)</option>
-                <option value="beta_pert">Beta-PERT (Tail Conservative)</option>
-                <option value="weibull">Weibull (Extreme Event)</option>
-              </select>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                <span style={{ fontSize: '12px', color: 'var(--sub)' }}>Distribution:</span>
+                <select
+                  value={distributionType}
+                  onChange={(e) => {
+                    setDistributionType(e.target.value as any);
+                    onShowToast?.('info', 'Distribution Model Updated', `Monte Carlo recalculated using ${e.target.value.toUpperCase()} loss density.`);
+                  }}
+                  style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--line)', fontSize: '12px' }}
+                >
+                  <option value="lognormal">Log-Normal (FAIR Standard)</option>
+                  <option value="beta_pert">Beta-PERT (Tail Conservative)</option>
+                  <option value="weibull">Weibull (Extreme Event)</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                <span style={{ fontSize: '12px', color: 'var(--sub)' }}>Trials:</span>
+                <select
+                  value={iterations}
+                  onChange={(e) => {
+                    const iters = Number(e.target.value);
+                    setIterations(iters);
+                    onShowToast?.('info', 'Simulation Runs Updated', `Monte Carlo recalculated with ${iters.toLocaleString()} trials.`);
+                  }}
+                  style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--line)', fontSize: '12px' }}
+                >
+                  <option value={10000}>10,000 trials</option>
+                  <option value={25000}>25,000 trials</option>
+                  <option value={50000}>50,000 trials</option>
+                </select>
+              </div>
             </div>
           </div>
 

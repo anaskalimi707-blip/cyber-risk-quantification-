@@ -1,5 +1,6 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { RiskDecisionProvider } from './context/RiskDecisionContext';
 import { LoginView } from './components/auth/LoginView';
 import { LockScreenModal } from './components/auth/LockScreenModal';
 
@@ -30,7 +31,7 @@ const ThirdPartyRisk = lazy(() => import('./components/views/ThirdPartyRisk').th
 const ReportsView = lazy(() => import('./components/views/ReportsView').then(m => ({ default: m.ReportsView })));
 const SettingsView = lazy(() => import('./components/views/SettingsView').then(m => ({ default: m.SettingsView })));
 
-import { NavigationPage, UserRole } from './types';
+import { NavigationPage } from './types';
 
 // Financial ledger loading skeleton
 const ViewLoadingSkeleton = () => (
@@ -49,7 +50,7 @@ const ViewLoadingSkeleton = () => (
 
 
 function EnterpriseWorkspace() {
-  const { user, role, isAuthenticated, switchRole } = useAuth();
+  const { role, isAuthenticated, switchRole } = useAuth();
   const [activePage, setActivePage] = useState<NavigationPage>('overview');
   const [selectedScenarioId, setSelectedScenarioId] = useState<string>('scen-ransomware-payment');
   
@@ -369,7 +370,9 @@ function EnterpriseWorkspace() {
 export function App() {
   return (
     <AuthProvider>
-      <EnterpriseWorkspace />
+      <RiskDecisionProvider>
+        <EnterpriseWorkspace />
+      </RiskDecisionProvider>
     </AuthProvider>
   );
 }

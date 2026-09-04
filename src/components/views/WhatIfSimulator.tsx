@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { NavigationPage } from '../../types';
-import { RotateCcw, BookmarkPlus, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { RotateCcw, BookmarkPlus, ArrowRight, CheckCircle2, Sliders, Shield, AlertCircle } from 'lucide-react';
 import { SimulationSnapshotModal } from '../modals/SimulationSnapshotModal';
+import { useRiskDecision } from '../../context/RiskDecisionContext';
 
 interface WhatIfSimulatorProps {
   onNavigate: (page: NavigationPage) => void;
@@ -9,6 +10,7 @@ interface WhatIfSimulatorProps {
 }
 
 export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({ onNavigate, onShowToast }) => {
+  const { totalEalInr, riskAppetiteInr } = useRiskDecision();
   const [mfa, setMfa] = useState(88);
   const [edr, setEdr] = useState(72);
   const [rto, setRto] = useState(18);
@@ -17,10 +19,21 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({ onNavigate, on
   const [vendorFailure, setVendorFailure] = useState(false);
   const [isSnapshotModalOpen, setIsSnapshotModalOpen] = useState<boolean>(false);
 
-  // Dynamic simulation calculations
-  const baseline = 4.2;
-  const reduction = (mfa * 0.008) + (edr * 0.006) + (immutability ? 0.6 : 0) + (segmentation ? 0.5 : 0) - (vendorFailure ? 0.8 : 0);
-  const simulated = Math.max(0.8, baseline - reduction);
+  // Dynamic simulation calculations based on current enterprise baseline
+  const enterpriseBaselineCr = totalEalInr / 10000000;
+  const toleranceCr = riskAppetiteInr / 10000000;
+
+  // Counterfactual delta calculations
+  const mfaDelta = ((mfa - 88) / 100) * 1.6; // MFA marginal impact
+  const edrDelta = ((edr - 72) / 100) * 1.2; // EDR marginal impact
+  const rtoDelta = ((18 - rto) / 18) * 0.9;  // Downtime reduction impact
+  const immutabilityDelta = immutability ? 1.2 : -0.8;
+  const segmentationDelta = segmentation ? 0.95 : 0;
+  const vendorPenalty = vendorFailure ? 1.8 : 0;
+
+  const totalReduction = mfaDelta + edrDelta + rtoDelta + immutabilityDelta + segmentationDelta - vendorPenalty;
+  const simulated = Math.max(0.8, enterpriseBaselineCr - totalReduction);
+
 
   const handleReset = () => {
     setMfa(88);
@@ -127,21 +140,24 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({ onNavigate, on
         <div style={{ paddingTop: 0 }}>
           <div className="ledger-row" style={{ margin: '0 0 20px' }}>
             <div className="ledger-item">
-              <div className="l">Current risk</div>
-              <div className="v">₹{baseline.toFixed(1)} cr</div>
+              <div className="l">Baseline Enterprise EAL</div>
+              <div className="v">₹{enterpriseBaselineCr.toFixed(2)} Cr</div>
             </div>
             <div className="ledger-item">
-              <div className="l">Simulated risk</div>
-              <div className="v" style={{ color: 'var(--teal)' }}>₹{simulated.toFixed(1)} cr</div>
+              <div className="l">Simulated Counterfactual</div>
+              <div className="v" style={{ color: 'var(--teal)' }}>₹{simulated.toFixed(2)} Cr</div>
             </div>
             <div className="ledger-item">
-              <div className="l">Reduction</div>
-              <div className="v">₹{Math.max(0, baseline - simulated).toFixed(1)} cr</div>
+              <div className="l">Simulated Delta</div>
+              <div className="v" style={{ color: simulated < enterpriseBaselineCr ? 'var(--teal)' : 'var(--crimson)' }}>
+                {simulated < enterpriseBaselineCr ? '↓ ' : '↑ '}
+                ₹{Math.abs(enterpriseBaselineCr - simulated).toFixed(2)} Cr
+              </div>
             </div>
           </div>
 
-          <div className={`callout ${simulated <= 2.5 ? 'teal' : 'crimson'}`}>
-            Status: <b>{simulated <= 2.5 ? 'Within tolerance' : 'Above tolerance (₹2.5 Cr Limit)'}</b> at the simulated settings.
+          <div className={`callout ${simulated <= toleranceCr ? 'teal' : 'crimson'}`}>
+            Status: <b>{simulated <= toleranceCr ? `Within Risk Appetite (≤ ₹${toleranceCr.toFixed(2)} Cr)` : `Above Risk Appetite (> ₹${toleranceCr.toFixed(2)} Cr Limit)`}</b> at current counterfactual slider configurations.
           </div>
 
           <div className="l" style={{ fontSize: '12px', color: 'var(--sub)', margin: '16px 0 8px' }}>

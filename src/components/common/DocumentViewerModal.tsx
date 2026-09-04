@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Printer, Download, CheckCircle2, Shield, Lock, FileText, QrCode } from 'lucide-react';
 import { downloadDocumentPdf } from '../../utils/pdfGenerator';
+import { useRiskDecision } from '../../context/RiskDecisionContext';
 
 interface DocumentViewerModalProps {
   isOpen: boolean;
@@ -17,7 +18,14 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
   documentType = "Executive Board Briefing",
   onShowToast
 }) => {
+  const { totalEalInr, totalExposureInr, totalRiskReducedInr, treatments, auditEvents } = useRiskDecision();
+
   if (!isOpen) return null;
+
+  const currentEalCr = (totalEalInr / 10000000).toFixed(2);
+  const currentVaRCr = (totalExposureInr / 10000000).toFixed(2);
+  const reductionCr = (totalRiskReducedInr / 10000000).toFixed(2);
+  const latestHash = auditEvents.length > 0 ? auditEvents[0].decisionHash : '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08';
 
   const handleDownloadPdf = () => {
     downloadDocumentPdf({
@@ -114,7 +122,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                 1. Executive Summary & Financial Exposure
               </h2>
               <p className="text-[13px] text-slate-700 leading-relaxed">
-                As of Q3 2026, Acme Financial Services' total aggregate Value-at-Risk (VaR 95%) is estimated at <strong className="text-crimson font-serif">₹18.40 Crore</strong>, which currently exceeds the Board Risk Tolerance Limit of <strong className="font-serif text-ink">₹10.00 Crore</strong>. The Expected Annual Loss (EAL) is <strong className="font-serif text-crimson">₹8.60 Crore</strong>, driven primarily by payment settlement disruption vectors and administrative credential exposure.
+                As of Q3 2026, Acme Financial Services' current aggregate Value-at-Risk (VaR 95%) is estimated at <strong className="text-crimson font-serif">₹{currentVaRCr} Crore</strong>. The current Expected Annual Loss (EAL) is <strong className="font-serif text-crimson">₹{currentEalCr} Crore</strong>{Number(reductionCr) > 0 ? ` (reflecting ₹${reductionCr} Crore achieved through active risk mitigations and transfers)` : ''}, calibrated against the Board Risk Appetite Limit of <strong className="font-serif text-ink">₹10.00 Crore</strong>.
               </p>
             </div>
 
@@ -135,9 +143,15 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                 <tbody className="divide-y divide-slate-200">
                   <tr>
                     <td className="p-2 font-medium">Payment Processing (UPI & NetBanking)</td>
-                    <td className="p-2 font-serif font-bold text-crimson">₹4.20 Crore</td>
+                    <td className="p-2 font-serif font-bold text-crimson">
+                      {treatments['scen-ransomware-payment'] ? treatments['scen-ransomware-payment'].residualEalFormatted : '₹4.20 Crore'}
+                    </td>
                     <td className="p-2 font-serif">₹13.80 Crore</td>
-                    <td className="p-2 text-crimson font-semibold">Above Tolerance</td>
+                    <td className="p-2">
+                      <span className={`badge ${treatments['scen-ransomware-payment'] ? 'good' : 'crit'}`}>
+                        {treatments['scen-ransomware-payment'] ? 'Mitigated / Transferred' : 'Above Tolerance'}
+                      </span>
+                    </td>
                   </tr>
                   <tr>
                     <td className="p-2 font-medium">Customer KYC & Account Vault</td>
@@ -186,7 +200,7 @@ export const DocumentViewerModal: React.FC<DocumentViewerModalProps> = ({
                   <span>SHA-256 Cryptographic Tamper-Evident Seal Verified</span>
                 </div>
                 <div className="font-mono text-[10px] text-sub mt-0.5">
-                  HASH: 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
+                  HASH: {latestHash}
                 </div>
               </div>
 

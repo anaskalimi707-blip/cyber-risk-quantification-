@@ -3,6 +3,8 @@ import { NavigationPage } from '../../types';
 import { mockInvestments } from '../../data/mockData';
 import { optimizePortfolio, type PortfolioObjective } from '../../utils/portfolioOptimizer';
 import { ExecutiveSignOffModal } from '../modals/ExecutiveSignOffModal';
+import { useRiskDecision } from '../../context/RiskDecisionContext';
+import { CheckCircle2, AlertTriangle, ShieldCheck, TrendingUp, HelpCircle, Layers, ArrowRight } from 'lucide-react';
 
 interface InvestmentOptimizerProps {
   onNavigate: (page: NavigationPage) => void;
@@ -20,6 +22,7 @@ export const InvestmentOptimizer: React.FC<InvestmentOptimizerProps> = ({
   onShowToast,
   onOpenDocument,
 }) => {
+  const { executeDecision } = useRiskDecision();
   const [budget, setBudget] = useState(10000000);
   const [objective, setObjective] = useState<PortfolioObjective>('risk-reduction');
   const [requiredInvestmentIds, setRequiredInvestmentIds] = useState<string[]>([]);
@@ -247,6 +250,27 @@ export const InvestmentOptimizer: React.FC<InvestmentOptimizerProps> = ({
           <h2 className="section">Optimization Parameters</h2>
           <div className="section-sub">The recommendation updates in real-time as capital, objective, or required controls change.</div>
 
+          {/* Quick Capital Preset Buttons */}
+          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', margin: '12px 0' }}>
+            {[
+              { label: '₹20 Lakh', val: 2000000 },
+              { label: '₹40 Lakh', val: 4000000 },
+              { label: '₹70 Lakh (Sweet Spot)', val: 7000000 },
+              { label: '₹1.00 Crore', val: 10000000 },
+              { label: '₹2.00 Crore (Fortress)', val: 20000000 }
+            ].map(tier => (
+              <button
+                key={tier.val}
+                type="button"
+                onClick={() => setBudget(tier.val)}
+                className={`btn sm ${budget === tier.val ? 'primary' : ''}`}
+                style={{ fontSize: '11px', padding: '4px 9px' }}
+              >
+                {tier.label}
+              </button>
+            ))}
+          </div>
+
           <div className="slider-row">
             <div className="top">
               <span className="lbl">Security Capital Budget</span>
@@ -263,7 +287,7 @@ export const InvestmentOptimizer: React.FC<InvestmentOptimizerProps> = ({
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--sub)', marginTop: '4px' }}>
               <span>Min: ₹20 Lakh</span>
-              <span style={{ color: '#0C233F', fontWeight: 600 }}>Inflection Sweet Spot: ₹1.00 Cr</span>
+              <span style={{ color: '#0C233F', fontWeight: 600 }}>Inflection Sweet Spot: ₹70L – ₹1.00 Cr</span>
               <span>Cap: ₹2.00 Crore</span>
             </div>
           </div>
@@ -319,6 +343,92 @@ export const InvestmentOptimizer: React.FC<InvestmentOptimizerProps> = ({
               <div className="pstat"><div className="l">Portfolio ROSI</div><div className="v" style={{ color: 'var(--teal)' }}>{Math.round(portfolio.riskReductionRoi)}%</div></div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* ── First-Class Explainability: WHY THIS PORTFOLIO? ── */}
+      <div className="card p-6 border-ledger/40 bg-card space-y-4" style={{ marginTop: '24px' }}>
+        <div className="flex justify-between items-center pb-3 border-b border-line">
+          <div className="flex items-center gap-2">
+            <HelpCircle size={18} className="text-teal" />
+            <h3 className="font-serif text-lg text-ink font-medium m-0">Why Was This Portfolio Selected?</h3>
+          </div>
+          <span className="badge good text-xs font-mono">MILP Knapsack Decision Trace</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+          <div className="p-3.5 bg-paper rounded-lg border border-line space-y-1.5">
+            <div className="font-bold text-ink flex items-center gap-1.5">
+              <CheckCircle2 size={13} className="text-teal" />
+              1. Maximum Marginal Risk Reduction
+            </div>
+            <p className="text-sub leading-relaxed m-0">
+              Selected controls deliver the steepest reduction gradient per rupee allocated. Phishing-resistant FIDO2 MFA yields <strong>₹5.60 in annualized risk reduction for every ₹1 invested</strong>.
+            </p>
+          </div>
+
+          <div className="p-3.5 bg-paper rounded-lg border border-line space-y-1.5">
+            <div className="font-bold text-ink flex items-center gap-1.5">
+              <CheckCircle2 size={13} className="text-teal" />
+              2. Critical Threat Scenarios Neutralized
+            </div>
+            <p className="text-sub leading-relaxed m-0">
+              Directly severs the active kill-chain for <strong>Ransomware affecting Payment Processing</strong> and <strong>KYC Data Exfiltration</strong>, breaking both initial access (T1190) and lateral traversal (T1021).
+            </p>
+          </div>
+
+          <div className="p-3.5 bg-paper rounded-lg border border-line space-y-1.5">
+            <div className="font-bold text-ink flex items-center gap-1.5">
+              <CheckCircle2 size={13} className="text-teal" />
+              3. Board Risk Appetite Restored
+            </div>
+            <p className="text-sub leading-relaxed m-0">
+              Cuts enterprise tail exposure down to <strong>{formatCrore(portfolio.residualRisk)}</strong>, shifting corporate risk posture safely within the approved <strong>₹10.0 Crore</strong> board appetite ceiling.
+            </p>
+          </div>
+
+          <div className="p-3.5 bg-paper rounded-lg border border-line space-y-1.5">
+            <div className="font-bold text-ink flex items-center gap-1.5">
+              <Layers size={13} className="text-teal" />
+              4. Protected Critical Enterprise Assets
+            </div>
+            <p className="text-sub leading-relaxed m-0">
+              Shields Tier-1 assets generating &gt;₹5 Cr/day in settlement volume, specifically <strong>Payment API Gateway (api-gateway-prod-01)</strong> and the <strong>Core Ledger PostgreSQL Cluster</strong>.
+            </p>
+          </div>
+
+          <div className="p-3.5 bg-paper rounded-lg border border-line space-y-1.5">
+            <div className="font-bold text-ink flex items-center gap-1.5">
+              <AlertTriangle size={13} className="text-amber" />
+              5. Controls Excluded (Opportunity Cost)
+            </div>
+            <p className="text-sub leading-relaxed m-0">
+              {mockInvestments.filter(inv => !selectedInvestmentIds.has(inv.id)).map(inv => inv.name).join(', ') || 'All available controls funded.'} were deferred to optimize immediate payback velocity under the current {formatLakh(budget)} cap.
+            </p>
+          </div>
+
+          <div className="p-3.5 bg-paper rounded-lg border border-line space-y-1.5">
+            <div className="font-bold text-ink flex items-center gap-1.5">
+              <ShieldCheck size={13} className="text-teal" />
+              6. Governance & Pre-requisite Constraints
+            </div>
+            <p className="text-sub leading-relaxed m-0">
+              Enforces architectural ordering: FIDO2 identity hardening operates as a mandatory prerequisite barrier before data restoration and DR automation can be credibly relied upon.
+            </p>
+          </div>
+        </div>
+
+        <div className="pt-3 border-t border-line flex flex-col sm:flex-row justify-between items-center gap-3">
+          <div className="text-xs text-sub">
+            Decision ready for executive sign-off. Approving allocates capital and writes an immutable audit record.
+          </div>
+          <button
+            className="btn primary text-xs py-2 px-4 flex items-center gap-2"
+            onClick={() => setIsSignOffModalOpen(true)}
+          >
+            <TrendingUp size={13} />
+            <span>Approve & Authorize Allocation ({formatLakh(portfolio.totalCost)})</span>
+          </button>
         </div>
       </div>
 
@@ -452,7 +562,14 @@ export const InvestmentOptimizer: React.FC<InvestmentOptimizerProps> = ({
         riskReduced={portfolio.expectedRiskReduction}
         roiPct={Math.round(portfolio.riskReductionRoi)}
         onConfirmSignOff={(signData) => {
-          onShowToast('success', 'Board Requisition Authorized', `Capital allocation of ${formatLakh(portfolio.totalCost)} signed off by ${signData.approver}. Cost Center: ${signData.costCenter}`);
+          executeDecision({
+            scenarioId: 'scen-ransomware-payment',
+            action: 'TREAT',
+            actor: signData.approver,
+            role: 'CFO',
+            rationale: `Executive Board Capital Authorization: Allocated ${formatLakh(portfolio.totalCost)} across ${portfolio.selectedInvestments.map(i => i.name).join(', ')}. Cost center: ${signData.costCenter}. Target residual loss: ${formatCrore(portfolio.residualRisk)}.`
+          });
+          onShowToast('success', 'Board Requisition Authorized & Logged', `Capital allocation of ${formatLakh(portfolio.totalCost)} signed off by ${signData.approver}. Immutably logged with SHA-256 seal.`);
         }}
       />
     </div>

@@ -112,6 +112,53 @@ export const apiService = {
       };
     }
 
+    if (qLower.includes('cve') || qLower.includes('epss') || qLower.includes('kev') || qLower.includes('vuln') || qLower.includes('signal')) {
+      return {
+        answer: "Our Risk Intelligence engine correlates NVD CVEs with FIRST EPSS v3 and CISA KEV exploitation catalogs. For example, CVE-2024-21413 (Microsoft Outlook RCE) carries an EPSS of 0.82 (82nd percentile weaponization probability in 30 days) and active CISA KEV listing, elevating its attack frequency to 0.20/yr on internet-exposed gateways.",
+        keyFindings: [
+          "Severity ≠ Risk: A CVSS 9.8 vulnerability with EPSS 0.02 inside an isolated enclave produces negligible annualized loss.",
+          "CVE-2024-21413 and CVE-2023-4966 are both active on external perimeter surfaces, demanding priority remediation.",
+          "FIRST EPSS probability curves are updated daily and fed directly into the Monte Carlo Loss Event Frequency (LEF) parameter."
+        ],
+        evidenceCitations: [
+          { id: 'ev_cisa_kev_01', source: 'CISA Known Exploited Vulnerabilities (KEV) Catalog', timestamp: '2026-09-04 04:00', hashSnippet: 'c82f91a0...' },
+          { id: 'ev_first_epss_02', source: 'FIRST EPSS v3 API (FIRST.org)', timestamp: '2026-09-04 06:15', hashSnippet: '9e38d72b...' },
+          { id: 'ev_nvd_03', source: 'NIST National Vulnerability Database (NVD)', timestamp: '2026-09-04 02:00', hashSnippet: '4a7c19f2...' }
+        ],
+        assumptions: [
+          "EPSS score represents probability of in-the-wild exploitation within next 30 days.",
+          "Internal asset exposure weights adjust probability downward by 70% for air-gapped systems."
+        ],
+        confidence: 'High' as const,
+        suggestedActions: [
+          { label: 'View Technical Signals & Vulnerability Intelligence', actionId: 'nav-signals' },
+          { label: 'Prioritize Chokepoint Mitigations', actionId: 'nav-attack-path' }
+        ]
+      };
+    }
+
+    if (qLower.includes('dml') || qLower.includes('causal') || qLower.includes('ai') || qLower.includes('model')) {
+      return {
+        answer: "The platform uses Double Machine Learning (DML) causal inference to isolate control treatment effects from telemetry confounding (e.g. org size and incident velocity). Conformal prediction intervals guarantee 90% finite-sample coverage on loss forecasts.",
+        keyFindings: [
+          "Hardware MFA exhibits the highest isolated treatment effect (-₹1.85 Cr EAL reduction).",
+          "Automated immutable backups reduce primary business interruption loss by 74%.",
+          "Conformal 90% confidence band: ₹6.8 Cr to ₹10.4 Cr enterprise loss."
+        ],
+        evidenceCitations: [
+          { id: 'ev_causal_dml_01', source: 'EconML LinearDML Estimator with 5-Fold Cross-Fitting', timestamp: '2026-09-04 05:30', hashSnippet: '6b1d40ef...' }
+        ],
+        assumptions: [
+          "Unconfoundedness conditioned on IT asset count, external IP count, and historical telemetry.",
+          "Overlap condition satisfied across security posture tiers."
+        ],
+        confidence: 'High' as const,
+        suggestedActions: [
+          { label: 'Inspect Causal Effects in Risk Intelligence', actionId: 'nav-signals' }
+        ]
+      };
+    }
+
     return {
       answer: "CyberOptix is continuously monitoring your technical telemetry and mapping it to financial risk. All estimates are backed by verifiable cryptographic evidence hashes.",
       keyFindings: [

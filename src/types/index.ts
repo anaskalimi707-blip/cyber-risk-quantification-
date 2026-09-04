@@ -105,7 +105,19 @@ export interface RiskScenario {
   businessService: string;
   threatActor: string;
   topDrivers: string[];
-  attackPathNodes: { id: string; name: string; status: string; controlWeakness?: string }[];
+  attackPathNodes: {
+    id: string;
+    name?: string;
+    stepNumber?: number;
+    techniqueId?: string;
+    techniqueName?: string;
+    tactic?: string;
+    description?: string;
+    status: string;
+    affectedAsset?: string;
+    controlWeakness?: string;
+    mitreUrl?: string;
+  }[];
   lastCalculated: string;
 }
 
@@ -179,3 +191,112 @@ export interface AIChatMessage {
   suggestedActions?: { label: string; actionId: string }[];
   requiresApproval?: boolean;
 }
+
+// ─── Normalized Public Cyber Intelligence & Domain Models ───────────────────
+
+export type DataSourceStatus = 'LIVE' | 'CACHED' | 'STALE' | 'UNAVAILABLE';
+
+export interface ProvenanceMetadata {
+  source: 'NVD/NIST' | 'FIRST.org EPSS' | 'CISA KEV' | 'MITRE ATT&CK' | 'CrowdStrike Falcon' | 'Qualys VMDR' | 'Okta IAM' | 'AWS Security Hub' | 'Synthetic Model';
+  sourceId: string;
+  retrievedAt: string;
+  updatedAt?: string;
+  confidence: 'High' | 'Medium' | 'Low';
+  status: DataSourceStatus;
+  hash: string;
+}
+
+export interface VulnerabilityRecord {
+  id: string;
+  cve: string;
+  title: string;
+  description: string;
+  cvss: number;
+  cvssVector: string;
+  cvssSeverity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  epss: number; // 0.00 to 1.00
+  epssPercentile: number; // e.g. 96.4th percentile
+  epssVelocity30d?: number; // e.g. +0.14
+  kevListed: boolean;
+  kevDueDate?: string;
+  ransomwareCampaignUse: boolean;
+  affectedProducts: string[];
+  affectedAssetId?: string;
+  affectedAssetName?: string;
+  affectedServiceName?: string;
+  isInternetExposed: boolean;
+  remediationUrgency: 'Immediate (24h)' | 'High (7d)' | 'Standard (30d)';
+  remediationAction: string;
+  provenance: ProvenanceMetadata;
+}
+
+export interface ThreatSignalRecord {
+  id: string;
+  actor: string;
+  campaign: string;
+  tactic: string;
+  techniqueId: string;
+  techniqueName: string;
+  activeExploitation: boolean;
+  targetedSectors: string[];
+  firstObserved: string;
+  lastSeen: string;
+  confidence: 'High' | 'Medium' | 'Low';
+  relatedCves: string[];
+  provenance: ProvenanceMetadata;
+}
+
+export interface MitreAttackStep {
+  id: string;
+  stepNumber: number;
+  techniqueId: string;
+  techniqueName: string;
+  tactic: string;
+  description: string;
+  status: 'Entry Point' | 'Exposed' | 'Weak Control' | 'Compromised' | 'Target Asset' | 'Impact Realized' | 'Business Impact';
+  affectedAsset: string;
+  controlWeakness?: string;
+  chokepointControl?: string;
+  chokepointControlId?: string;
+  ealReductionInr?: number;
+  ealReductionFormatted?: string;
+  mitreUrl: string;
+}
+
+export type RiskDecisionAction = 'TREAT' | 'TRANSFER' | 'ACCEPT';
+
+export interface RiskTreatmentRecord {
+  id: string;
+  scenarioId: string;
+  scenarioName: string;
+  action: RiskDecisionAction;
+  actor: string;
+  role: UserRole;
+  timestamp: string;
+  rationale: string;
+  selectedControlId?: string;
+  selectedControlName?: string;
+  insurancePolicyRef?: string;
+  acceptanceExpiryDate?: string;
+  originalEalInr: number;
+  residualEalInr: number;
+  residualEalFormatted: string;
+  riskReductionInr: number;
+  riskReductionFormatted: string;
+  decisionHash: string;
+}
+
+export interface AuditEventRecord {
+  id: string;
+  timestamp: string;
+  actor: string;
+  role: UserRole;
+  action: string;
+  object: string;
+  previousState: string;
+  newState: string;
+  rationale: string;
+  riskImpact: string;
+  decisionHash: string;
+}
+
