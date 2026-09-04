@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Sparkles, Sun, Moon, Bell, ShieldCheck, Lock, LogOut, ChevronDown, UserCheck, Shield, Menu } from 'lucide-react';
+import { Search, Sparkles, Sun, Moon, Bell, ShieldCheck, Lock, LogOut, ChevronDown, UserCheck, Shield, Menu, ShieldAlert, SlidersHorizontal, Workflow, FileCheck2 } from 'lucide-react';
 import { UserRole } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 
@@ -199,18 +199,26 @@ export const TopBar: React.FC<TopBarProps> = ({
                 Switch Role Persona
               </div>
               <div className="grid grid-cols-2 gap-1 mb-2">
-                {(['CISO', 'CFO', 'SecurityArchitect', 'Auditor'] as UserRole[]).map((r) => (
+                {[
+                  { role: 'CISO' as UserRole, icon: ShieldAlert },
+                  { role: 'CFO' as UserRole, icon: SlidersHorizontal },
+                  { role: 'SecurityArchitect' as UserRole, icon: Workflow },
+                  { role: 'Auditor' as UserRole, icon: FileCheck2 },
+                ].map(({ role: r, icon: Icon }) => (
                   <button
                     key={r}
                     onClick={() => handleRoleSelect(r)}
-                    className={`px-2 py-1.5 text-xs text-left rounded cursor-pointer transition-colors flex items-center justify-between ${
+                    className={`px-2 py-1.5 text-xs text-left rounded cursor-pointer transition-colors flex items-center justify-between gap-1.5 ${
                       user?.role === r 
                         ? 'bg-ink text-white font-medium' 
                         : 'hover:bg-paper text-text'
                     }`}
                   >
-                    <span>{r}</span>
-                    {user?.role === r && <span className="w-1.5 h-1.5 rounded-full bg-teal" />}
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <Icon size={12} className={user?.role === r ? 'text-teal' : 'text-sub'} />
+                      <span className="truncate">{r}</span>
+                    </div>
+                    {user?.role === r && <span className="w-1.5 h-1.5 rounded-full bg-teal shrink-0" />}
                   </button>
                 ))}
               </div>

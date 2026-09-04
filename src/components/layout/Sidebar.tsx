@@ -7,11 +7,20 @@ import {
   Layers, 
   ChevronLeft, 
   ChevronRight, 
-  GripVertical,
   ShieldAlert,
   SlidersHorizontal,
   FileCheck2,
-  Workflow
+  Workflow,
+  ShieldCheck,
+  Cpu,
+  Activity,
+  Server,
+  TrendingUp,
+  Zap,
+  FileText,
+  FileSpreadsheet,
+  Settings,
+  Users
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -73,9 +82,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
       desc: 'High-level financial summaries & capital plans'
     },
     'SOC Analyst': {
-      pages: ['command-center', 'assets', 'incidents', 'controls'],
-      label: 'SOC Operations',
-      icon: Workflow,
+      pages: ['command-center', 'scenarios', 'assets', 'incidents'],
+      label: 'SecOps Operations',
+      icon: Activity,
       desc: 'Incident response & asset vulnerability telemetry'
     },
     'GRC Analyst': {
@@ -98,22 +107,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
-  const allNavItems: { id: NavigationPage; label: string; badge?: string; roles: UserRole[] }[] = [
-    { id: 'overview', label: 'Overview', roles: ['CISO', 'CFO'] },
-    { id: 'crim-x', label: 'CRIM-X Apex Engine', badge: 'Apex AI', roles: ['CISO', 'CFO', 'SecurityArchitect', 'Auditor'] },
-    { id: 'command-center', label: 'Risk Command Center', badge: 'Live', roles: ['CISO', 'SecurityArchitect'] },
-    { id: 'scenarios', label: 'Risk Scenarios', roles: ['CISO', 'CFO', 'SecurityArchitect'] },
-    { id: 'assets', label: 'Assets & Exposure', roles: ['SecurityArchitect'] },
-    { id: 'controls', label: 'Controls Matrix', roles: ['SecurityArchitect', 'Auditor'] },
-    { id: 'optimizer', label: 'Investment Optimizer', badge: 'AI', roles: ['CISO', 'CFO'] },
-    { id: 'what-if', label: 'What-If Simulator', roles: ['CISO', 'SecurityArchitect'] },
-    { id: 'incidents', label: 'Incidents & Resilience', roles: ['SecurityArchitect', 'Auditor'] },
-    { id: 'vendors', label: 'Third-Party Risk', roles: ['CFO', 'Auditor'] },
-    { id: 'compliance', label: 'Compliance & Evidence', roles: ['Auditor'] },
-    { id: 'connectors', label: 'Connectors', roles: ['SecurityArchitect', 'Auditor'] },
-    { id: 'audit-log', label: 'Audit Log', roles: ['Auditor', 'CISO'] },
-    { id: 'reports', label: 'Reports & Briefings', roles: ['CISO', 'CFO', 'Auditor'] },
-    { id: 'settings', label: 'Settings & Risk Appetite', roles: ['CISO', 'CFO', 'Auditor'] },
+  const allNavItems: { id: NavigationPage; label: string; badge?: string; icon: any; roles: UserRole[] }[] = [
+    { id: 'overview', label: 'Overview', icon: ShieldCheck, roles: ['CISO', 'CFO'] },
+    { id: 'crim-x', label: 'CRIM-X Apex Engine', badge: 'Apex AI', icon: Cpu, roles: ['CISO', 'CFO', 'SecurityArchitect', 'Auditor'] },
+    { id: 'command-center', label: 'Risk Command Center', badge: 'Live', icon: Activity, roles: ['CISO', 'SecurityArchitect'] },
+    { id: 'scenarios', label: 'Risk Scenarios', icon: ShieldAlert, roles: ['CISO', 'CFO', 'SecurityArchitect'] },
+    { id: 'assets', label: 'Assets & Exposure', icon: Server, roles: ['SecurityArchitect'] },
+    { id: 'controls', label: 'Controls Matrix', icon: Workflow, roles: ['SecurityArchitect', 'Auditor'] },
+    { id: 'optimizer', label: 'Investment Optimizer', badge: 'AI', icon: TrendingUp, roles: ['CISO', 'CFO'] },
+    { id: 'what-if', label: 'What-If Simulator', icon: SlidersHorizontal, roles: ['CISO', 'SecurityArchitect'] },
+    { id: 'incidents', label: 'Incidents & Resilience', icon: Zap, roles: ['SecurityArchitect', 'Auditor'] },
+    { id: 'vendors', label: 'Third-Party Risk', icon: Users, roles: ['CFO', 'Auditor'] },
+    { id: 'compliance', label: 'Compliance & Evidence', icon: FileCheck2, roles: ['Auditor'] },
+    { id: 'connectors', label: 'Connectors', icon: Layers, roles: ['SecurityArchitect', 'Auditor'] },
+    { id: 'audit-log', label: 'Audit Log', icon: FileText, roles: ['Auditor', 'CISO'] },
+    { id: 'reports', label: 'Reports & Briefings', icon: FileSpreadsheet, roles: ['CISO', 'CFO', 'Auditor'] },
+    { id: 'settings', label: 'Settings & Risk Appetite', icon: Settings, roles: ['CISO', 'CFO', 'Auditor'] },
   ];
 
   const displayedItems = filterByRole
@@ -150,30 +159,36 @@ export const Sidebar: React.FC<SidebarProps> = ({
   if (collapsed) {
     return (
       <nav 
-        className="bg-ink text-slate-200 py-6 px-2.5 flex flex-col items-center h-screen sticky top-0 select-none shadow-xl border-r border-white/10 z-30 transition-all"
+        className="bg-ink text-slate-200 py-6 px-2 flex flex-col items-center h-screen sticky top-0 select-none shadow-xl border-r border-white/10 z-30 transition-all"
         style={{ width: '64px' }}
       >
         <button 
           onClick={onToggleCollapse} 
-          className="p-1.5 mb-6 text-slate-400 hover:text-white rounded bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
+          className="p-1.5 mb-5 text-slate-400 hover:text-white rounded bg-white/5 hover:bg-white/10 cursor-pointer transition-colors"
           title="Expand Sidebar"
         >
           <ChevronRight size={18} />
         </button>
 
-        <div className="flex flex-col gap-2 flex-1 items-center">
+        <div className="flex flex-col gap-1.5 flex-1 items-center overflow-y-auto w-full px-1">
           {displayedItems.map((item) => {
             const isActive = activePage === item.id;
+            const Icon = item.icon;
             return (
               <button
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
-                className={`p-2.5 rounded-md cursor-pointer transition-all ${
-                  isActive ? 'bg-white/15 text-white shadow-xs' : 'text-slate-400 hover:text-white hover:bg-white/5'
+                className={`p-2 rounded-lg cursor-pointer transition-all flex items-center justify-center relative w-full ${
+                  isActive 
+                    ? 'bg-ledger/20 text-[#38BDF8] border border-ledger/30 shadow-xs' 
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
                 }`}
                 title={item.label}
               >
-                <span className={`block w-2 h-2 rounded-full ${isActive ? 'bg-teal' : 'bg-slate-500'}`} />
+                <Icon size={17} />
+                {item.badge && (
+                  <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-teal ring-2 ring-ink" />
+                )}
               </button>
             );
           })}
@@ -181,10 +196,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         <button 
           onClick={onOpenAI}
-          className="p-2 rounded-full bg-teal/20 text-[#2DD4BF] hover:bg-teal/30 cursor-pointer transition-all"
+          className="p-2.5 mt-2 rounded-xl bg-teal/20 text-[#2DD4BF] hover:bg-teal/30 cursor-pointer transition-all"
           title="Ask AI Copilot"
         >
-          <Sparkles size={16} className="text-amber" />
+          <Sparkles size={16} className="text-amber animate-pulse" />
         </button>
       </nav>
     );
@@ -237,10 +252,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </p>
       </div>
 
-      {/* Navigation Items */}
+      {/* Navigation Items with Icons */}
       <div className="flex flex-col gap-0.5 flex-1 overflow-y-auto pr-1">
         {displayedItems.map((item) => {
           const isActive = activePage === item.id;
+          const Icon = item.icon;
           return (
             <button
               key={item.id}
@@ -251,14 +267,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
               onClick={() => onNavigate(item.id)}
             >
-              <span className={`w-1.5 h-1.5 rounded-full transition-all shrink-0 ${
-                isActive ? 'bg-teal shadow-[0_0_8px_rgba(0,150,135,0.8)] scale-125' : 'bg-slate-500 group-hover:bg-slate-300'
-              }`} />
+              <Icon 
+                size={15} 
+                className={`shrink-0 transition-colors ${
+                  isActive ? 'text-teal' : 'text-slate-400 group-hover:text-slate-200'
+                }`} 
+              />
               <span className="flex-1 truncate">{item.label}</span>
               {item.badge && (
                 <span 
                   className={`text-[9.5px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${
-                    item.badge === 'AI' 
+                    item.badge === 'AI' || item.badge === 'Apex AI'
                       ? 'bg-teal/20 text-teal border border-teal/30' 
                       : 'bg-ledger/20 text-[#7FB3DF] border border-ledger/30'
                   }`}
